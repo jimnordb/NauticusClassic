@@ -1,6 +1,6 @@
 ﻿
 -- Chinese traditional localisation by Juha
-local L = LibStub("AceLocale-3.0"):NewLocale("Nauticus", "zhTW")
+local L = LibStub("AceLocale-3.0"):NewLocale("NauticusClassic", "zhTW")
 if not L then return; end
 
 -- addon description
@@ -50,7 +50,7 @@ L["Select None"] = "選擇-無"
 L["No Transport Selected"] = "沒有選擇路線"
 L["Not Available"] = "無有效計時"
 L["N/A"] = "--" -- abbreviation for Not Available
-L["Nauticus Options"] = "Nauticus 選項"
+L["NauticusClassic Options"] = "NauticusClassic 選項"
 L["Alarm is now: "] = "警示現在"
 L["ON"] = "啟用"
 L["OFF"] = "關閉"

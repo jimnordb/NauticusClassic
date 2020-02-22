@@ -1,6 +1,6 @@
 ﻿
 -- German localisation by Alex6002 & LarryCurse
-local L = LibStub("AceLocale-3.0"):NewLocale("Nauticus", "deDE")
+local L = LibStub("AceLocale-3.0"):NewLocale("NauticusClassic", "deDE")
 if not L then return; end
 
 -- addon description
@@ -50,7 +50,7 @@ L["Select None"] = "Nichts auswählen"
 L["No Transport Selected"] = "Keine Route ausgewählt"
 L["Not Available"] = "Nicht Erreichbar"
 L["N/A"] = "N/A" -- abbreviation for Not Available
-L["Nauticus Options"] = "Nauticus Optionen"
+L["NauticusClassic Options"] = "NauticusClassic Optionen"
 L["Alarm is now: "] = "Der Alarm ist jetzt: "
 L["ON"] = "An"
 L["OFF"] = "Aus"

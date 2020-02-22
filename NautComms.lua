@@ -11,22 +11,22 @@ local DATA_VERSION = 1 -- route calibration versioning
 local CMD_VERSION = "VER"
 local CMD_KNOWN = "KWN4"
 
-local Nauticus = Nauticus
-local L = LibStub("AceLocale-3.0"):GetLocale("Nauticus")
+local NauticusClassic = NauticusClassic
+local L = LibStub("AceLocale-3.0"):GetLocale("NauticusClassic")
 
 local request
 local requestList = {}
 local requestVersion = false
 
 
-function Nauticus:CancelRequest()
+function NauticusClassic:CancelRequest()
 	if request then
 		self:CancelTimer(request, true)
 		request = nil
 	end
 end
 
-function Nauticus:DoRequest(wait)
+function NauticusClassic:DoRequest(wait)
 	self:CancelRequest()
 
 	if wait then
@@ -90,7 +90,7 @@ do
 		for i = 1, strlen(s) do
 			c = chrmap[strbyte(s, i)]
 			if not c then
-				Nauticus:DebugMessage("FECK: "..s.." ; i: "..i.." ; strbyte: "..strbyte(s, i))
+				NauticusClassic:DebugMessage("FECK: "..s.." ; i: "..i.." ; strbyte: "..strbyte(s, i))
 				return
 			end
 			num = num + c * base
@@ -121,7 +121,7 @@ local function StringHash(text)
 	return counter % 4294967291
 end
 
-function Nauticus:BroadcastTransportData()
+function NauticusClassic:BroadcastTransportData()
 	local since, boots, swaps
 	local lag = GetLag()
 	local trans_str = ""
@@ -161,7 +161,7 @@ function Nauticus:BroadcastTransportData()
 end
 
 --[===[@debug@
-function Nauticus:RequestAllTransports()
+function NauticusClassic:RequestAllTransports()
 	local trans_str = ""
 	for transit in ipairs(self.transports) do
 		trans_str = trans_str..crunch(transit)..","
@@ -172,11 +172,11 @@ function Nauticus:RequestAllTransports()
 end
 --@end-debug@]===]
 
-function Nauticus:RequestTransport(t)
+function NauticusClassic:RequestTransport(t)
 	requestList[t] = true
 end
 
-function Nauticus:SendMessage(msg)
+function NauticusClassic:SendMessage(msg)
 	if not self.comm_disable and GetChannelName(DEFAULT_CHANNEL) then
 		C_ChatInfo.SendAddonMessage("", msg, "CHANNEL", GetChannelName(DEFAULT_CHANNEL))
 	end
@@ -185,7 +185,7 @@ end
 local joinedChannel
 
 -- if we joined a channel
-function Nauticus:CHAT_MSG_CHANNEL_NOTICE(eventName, noticeType, _, _, numAndName, _, _, _, num, channel)
+function NauticusClassic:CHAT_MSG_CHANNEL_NOTICE(eventName, noticeType, _, _, numAndName, _, _, _, num, channel)
 	if noticeType == "YOU_JOINED" then
 		--self:DebugMessage("joined: "..channel)
 
@@ -225,7 +225,7 @@ local function GetArgs(message, separator)
 	return args
 end
 
-function Nauticus:CHAT_MSG_CHANNEL(eventName, msg, sender, _, numAndName, _, _, _, _, channel)
+function NauticusClassic:CHAT_MSG_CHANNEL(eventName, msg, sender, _, numAndName, _, _, _, _, channel)
 	if sender ~= UnitName("player") and strlower(channel) == strlower(DEFAULT_CHANNEL) then
 		--self:DebugMessage("sender: "..sender.." ; length: "..strlen(msg))
 		if 254 <= strlen(msg) then return; end -- message too big, probably corrupted
@@ -240,7 +240,7 @@ function Nauticus:CHAT_MSG_CHANNEL(eventName, msg, sender, _, numAndName, _, _, 
 	end
 end
 
-function Nauticus:ReceiveMessage_version(clientversion, sender)
+function NauticusClassic:ReceiveMessage_version(clientversion, sender)
 	--self:DebugMessage(sender.." says: version "..clientversion)
 
 	if clientversion > self.versionNum then
@@ -265,7 +265,7 @@ function Nauticus:ReceiveMessage_version(clientversion, sender)
 	end
 end
 
-function Nauticus:ReceiveMessage_known(version, transports, hash, sender)
+function NauticusClassic:ReceiveMessage_known(version, transports, hash, sender)
 	if version ~= DATA_VERSION then return; end
 
 	local lag = GetLag()
@@ -335,7 +335,7 @@ end
 
 -- returns a, b
 -- where a is if we should set our data to theirs (true or false) and b is how we should respond with ours (true or nil)
-function Nauticus:IsBetter(transit, since, boots, swaps)
+function NauticusClassic:IsBetter(transit, since, boots, swaps)
 	local ourSince, ourBoots, ourSwaps = self:GetKnownCycle(transit)
 
 	if since == nil then
@@ -384,7 +384,7 @@ function Nauticus:IsBetter(transit, since, boots, swaps)
 	end
 end
 
-function Nauticus:StringToKnown(transports)
+function NauticusClassic:StringToKnown(transports)
 	local args_tmp, transit, since, swaps, boots
 	local args = GetArgs(transports, ",")
 	local trans_tab = {}
@@ -417,7 +417,7 @@ end
 
 local inChannel, updateChannel
 
-function Nauticus:UpdateChannel(wait)
+function NauticusClassic:UpdateChannel(wait)
 	if updateChannel then self:CancelTimer(updateChannel, true); updateChannel = nil; end
 
 	if wait then
@@ -446,7 +446,7 @@ end
 
 do
 	local function ChatFilter_DataChannel(self, event, ...)
-		if strlower(select(9, ...)) == strlower(DEFAULT_CHANNEL) and not Nauticus.debug then
+		if strlower(select(9, ...)) == strlower(DEFAULT_CHANNEL) and not NauticusClassic.debug then
 			return true -- silence
 		end
 	end

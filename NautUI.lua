@@ -8,15 +8,15 @@ local GREY    = "|cffbababa"
 
 -- constants
 local NONE = -1
-local ARTWORK_PATH = "Interface\\AddOns\\Nauticus\\Artwork\\"
-local ARTWORK_LOGO = ARTWORK_PATH.."NauticusLogo"
+local ARTWORK_PATH = "Interface\\AddOns\\NauticusClassic\\Artwork\\"
+local ARTWORK_LOGO = ARTWORK_PATH.."NauticusClassicLogo"
 local ARTWORK_ALARM = "Interface\\Icons\\INV_Misc_PocketWatch_02"
 local NUMBER_FONT = "Fonts\\ARIALN.TTF"
 
-local Nauticus = Nauticus
-local L = LibStub("AceLocale-3.0"):GetLocale("Nauticus")
+local NauticusClassic = NauticusClassic
+local L = LibStub("AceLocale-3.0"):GetLocale("NauticusClassic")
 
-local transports = Nauticus.transports
+local transports = NauticusClassic.transports
 
 
 local function AddLine(text, func, checked, value, tooltipTitle, tooltipText)
@@ -39,7 +39,7 @@ local function AddSeparator()
 	UIDropDownMenu_AddButton(info)
 end
 
-function Nauticus:TransportSelectInitialise(frame, level)
+function NauticusClassic:TransportSelectInitialise(frame, level)
 
 	if level == 1 then
 		local info = UIDropDownMenu_CreateInfo()
@@ -49,7 +49,7 @@ function Nauticus:TransportSelectInitialise(frame, level)
 		AddLine(
 			L["List friendly faction only"], -- text
 			function() -- func
-				Nauticus.db.profile.factionSpecific = not Nauticus.db.profile.factionSpecific
+				NauticusClassic.db.profile.factionSpecific = not NauticusClassic.db.profile.factionSpecific
 				ToggleDropDownMenu(1, nil, Naut_TransportSelectFrame)
 			end,
 			self.db.profile.factionSpecific, -- checked?
@@ -61,7 +61,7 @@ function Nauticus:TransportSelectInitialise(frame, level)
 		AddLine(
 			L["List relevant to current zone only"], -- text
 			function() -- func
-				Nauticus.db.profile.zoneSpecific = not Nauticus.db.profile.zoneSpecific
+				NauticusClassic.db.profile.zoneSpecific = not NauticusClassic.db.profile.zoneSpecific
 				ToggleDropDownMenu(1, nil, Naut_TransportSelectFrame)
 			end,
 			self.db.profile.zoneSpecific, -- checked?
@@ -75,7 +75,7 @@ function Nauticus:TransportSelectInitialise(frame, level)
 		AddLine(
 			GREY..L["Select None"], -- text
 			function() -- func
-				Nauticus:SetTransport(NONE)
+				NauticusClassic:SetTransport(NONE)
 				ToggleDropDownMenu(1, nil, Naut_TransportSelectFrame)
 			end,
 			self.activeTransit == NONE, -- checked?
@@ -104,7 +104,7 @@ function Nauticus:TransportSelectInitialise(frame, level)
 				AddLine(
 					textdesc, -- text
 					function() -- func
-						Nauticus:SetTransport(id)
+						NauticusClassic:SetTransport(id)
 						ToggleDropDownMenu(1, nil, Naut_TransportSelectFrame)
 					end,
 					self.activeTransit == id, -- checked?
@@ -129,14 +129,14 @@ local function IsMenuOpen()
 		UIDROPDOWNMENU_OPEN_MENU == Naut_TransportSelectFrame
 end
 
-function Nauticus:RefreshMenu()
+function NauticusClassic:RefreshMenu()
 	if IsMenuOpen() then
 		CloseDropDownMenus()
 		ToggleDropDownMenu(1, nil, Naut_TransportSelectFrame)
 	end
 end
 
-local tablet = LibStub("LibSimpleFrame-Mod-1.0"):New("Nauticus", {
+local tablet = LibStub("LibSimpleFrame-Mod-1.0"):New("NauticusClassic", {
 	position = { point = "CENTER", x = 0, y = 0 },
 	lock = true,
 	scale = 1,
@@ -149,7 +149,7 @@ local tablet = LibStub("LibSimpleFrame-Mod-1.0"):New("Nauticus", {
 	min_height = 20,
 } )
 
-function Nauticus:ShowTooltip(transit)
+function NauticusClassic:ShowTooltip(transit)
 	local has = self:HasKnownCycle(transit)
 
 	if has then
@@ -228,7 +228,7 @@ end
 
 local iconTooltip, lastTip
 
-function Nauticus:HideTooltip(doHide)
+function NauticusClassic:HideTooltip(doHide)
 	if doHide then
 		tablet:Hide()
 		iconTooltip = nil
@@ -242,17 +242,17 @@ end
 local function AddNewVersionLine()
 	local line = L["New version available! Visit www.drool.me.uk/naut"]
 
-	if Nauticus.update_available == true then
+	if NauticusClassic.update_available == true then
 		tablet:AddLine(line, nil, true)
 			:Color(1, 0.1, 0.1, 1)
 	else
-		tablet:AddLine(line.." - ["..math.floor(Nauticus.update_available).."]", nil, true)
+		tablet:AddLine(line.." - ["..math.floor(NauticusClassic.update_available).."]", nil, true)
 			:Color(1, 0.82, 0, 1)
 			:Font(nil, 11, nil)
 
-		Nauticus.update_available = Nauticus.update_available - 1
-		if 0 > Nauticus.update_available then
-			Nauticus.update_available = nil
+		NauticusClassic.update_available = NauticusClassic.update_available - 1
+		if 0 > NauticusClassic.update_available then
+			NauticusClassic.update_available = nil
 		end
 	end
 end
@@ -268,7 +268,7 @@ local function GetParentFrame()
 	return nil
 end
 
-function Nauticus:MapIcon_OnEnter(frame)
+function NauticusClassic:MapIcon_OnEnter(frame)
 	local transit = frame:GetID()
 
 	tablet:Attach():Clear().db.scale = 0.85
@@ -298,18 +298,18 @@ function Nauticus:MapIcon_OnEnter(frame)
 	lastTip = GetTime()
 end
 
-function Nauticus:MapIcon_OnLeave(frame)
+function NauticusClassic:MapIcon_OnLeave(frame)
 	self:HideTooltip(true)
 end
 
 -- LDB stuff...
 local ldb = LibStub:GetLibrary("LibDataBroker-1.1")
-local dataobj = ldb:NewDataObject("Nauticus", { type = "data source", text = "Nauticus", icon = ARTWORK_LOGO } )
-Nauticus.dataobj = dataobj
+local dataobj = ldb:NewDataObject("NauticusClassic", { type = "data source", text = "NauticusClassic", icon = ARTWORK_LOGO } )
+NauticusClassic.dataobj = dataobj
 
 local barTooltipFrame
 
-function Nauticus:UpdateDisplay()
+function NauticusClassic:UpdateDisplay()
 	dataobj.icon = self:IsAlarmSet() and ARTWORK_ALARM or self.icon or ARTWORK_LOGO
 	dataobj.text = (0 < self.tempTextCount) and self.tempText or self.lowestNameTime
 
@@ -345,15 +345,15 @@ function dataobj:OnEnter()
 
 	tablet:Attach(point, self, rel, 0, 0):Clear().db.scale = 1
 
-	tablet:AddLine(Nauticus.title)
+	tablet:AddLine(NauticusClassic.title)
 		:Font(GameTooltipHeaderText:GetFont())
 		.left:SetJustifyH('CENTER')
 
-	Nauticus:ShowTooltip(Nauticus.activeTransit)
+	NauticusClassic:ShowTooltip(NauticusClassic.activeTransit)
 
 	tablet:AddLine("")
 
-	if Nauticus.update_available then
+	if NauticusClassic.update_available then
 		AddNewVersionLine()
 	end
 
@@ -368,26 +368,26 @@ function dataobj:OnEnter()
 end
 
 function dataobj:OnLeave()
-	Nauticus:HideTooltip(true)
+	NauticusClassic:HideTooltip(true)
 end
 
 function dataobj:OnClick(button)
 	if button == "LeftButton" then
 		if IsMenuOpen() then CloseDropDownMenus(); end
 		if IsAltKeyDown() then
-			if Nauticus:HasKnownCycle(Nauticus.activeTransit) then
-				Nauticus:ToggleAlarm()
-				Nauticus.tempText = "Alarm "..(Nauticus:IsAlarmSet() and RED..L["ON"] or GREEN..L["OFF"])
-				Nauticus.tempTextCount = 3
-				Nauticus:HideTooltip()
-				Nauticus:UpdateDisplay()
+			if NauticusClassic:HasKnownCycle(NauticusClassic.activeTransit) then
+				NauticusClassic:ToggleAlarm()
+				NauticusClassic.tempText = "Alarm "..(NauticusClassic:IsAlarmSet() and RED..L["ON"] or GREEN..L["OFF"])
+				NauticusClassic.tempTextCount = 3
+				NauticusClassic:HideTooltip()
+				NauticusClassic:UpdateDisplay()
 			end
 		else
-			Nauticus:HideTooltip()
-			Nauticus:SetTransport(Nauticus:NextTransportInList())
+			NauticusClassic:HideTooltip()
+			NauticusClassic:SetTransport(NauticusClassic:NextTransportInList())
 		end
 	elseif button == "RightButton" then
-		Nauticus:HideTooltip(true)
+		NauticusClassic:HideTooltip(true)
 		local point, rel = GetBarAnchor(self)
 		UIDropDownMenu_SetAnchor(Naut_TransportSelectFrame, 0, 0, point, self, rel)
 		ToggleDropDownMenu(1, nil, Naut_TransportSelectFrame)

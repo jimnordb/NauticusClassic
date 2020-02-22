@@ -8,7 +8,7 @@ local GREY    = "|cffbababa"
 
 -- constants
 local NONE = -1
-local ARTWORK_PATH = "Interface\\AddOns\\Nauticus\\Artwork\\"
+local ARTWORK_PATH = "Interface\\AddOns\\NauticusClassic\\Artwork\\"
 local ARTWORK_ZONING = ARTWORK_PATH.."MapIcon_Zoning"
 local ARTWORK_DEPARTING = ARTWORK_PATH.."Departing"
 local ARTWORK_IN_TRANSIT = ARTWORK_PATH.."Transit"
@@ -16,20 +16,19 @@ local ARTWORK_DOCKED = ARTWORK_PATH.."Docked"
 local MAX_FORMATTED_TIME = 541 -- the longest route minus 60
 local ICON_DEFAULT_SIZE = 18
 
-Nauticus = LibStub("AceAddon-3.0"):NewAddon("Nauticus", "AceEvent-3.0", "AceTimer-3.0")
-local Nauticus = Nauticus
-local L = LibStub("AceLocale-3.0"):GetLocale("Nauticus")
+NauticusClassic = LibStub("AceAddon-3.0"):NewAddon("NauticusClassic", "AceEvent-3.0", "AceTimer-3.0")
+local NauticusClassic = NauticusClassic
+local L = LibStub("AceLocale-3.0"):GetLocale("NauticusClassic")
 local HBD = LibStub("HereBeDragons-2.0")
 local Pins = LibStub("HereBeDragons-Pins-2.0")
---local Astrolabe = DongleStub("Astrolabe-1.0")
---local ldbicon = LibStub("LibDBIcon-1.0")
+local ldbicon = LibStub("LibDBIcon-1.0")
 
 -- object variables
-Nauticus.versionNum = 404 -- for comparison
-Nauticus.lowestNameTime = "--"
-Nauticus.tempText = ""
-Nauticus.tempTextCount = 0
-Nauticus.debug = false
+NauticusClassic.versionNum = 100 -- for comparison
+NauticusClassic.lowestNameTime = "--"
+NauticusClassic.tempText = ""
+NauticusClassic.tempTextCount = 0
+NauticusClassic.debug = false
 
 -- local variables
 local lastcheck_timeout = 30
@@ -77,10 +76,10 @@ local _options = {
 		desc = L["Toggle display of icons on the Mini-Map."],
 		order = 600,
 		get = function()
-			return Nauticus.db.profile.showMiniIcons
+			return NauticusClassic.db.profile.showMiniIcons
 		end,
 		set = function(info, val)
-			Nauticus.db.profile.showMiniIcons = val
+			NauticusClassic.db.profile.showMiniIcons = val
 			showMiniIcons = val
 			if not val then
 				for _, t in pairs(transports) do
@@ -97,10 +96,10 @@ local _options = {
 		desc = L["Toggle display of icons on the World Map."],
 		order = 650,
 		get = function()
-			return Nauticus.db.profile.showWorldIcons
+			return NauticusClassic.db.profile.showWorldIcons
 		end,
 		set = function(info, val)
-			Nauticus.db.profile.showWorldIcons = val
+			NauticusClassic.db.profile.showWorldIcons = val
 			showWorldIcons = val
 			if not val then
 				for _, t in pairs(transports) do
@@ -115,10 +114,10 @@ local _options = {
 		desc = L["Change the size of the Mini-Map icons."],
 		order = 400,
 		get = function()
-			return Nauticus.db.profile.miniIconSize
+			return NauticusClassic.db.profile.miniIconSize
 		end,
 		set = function(info, val)
-			Nauticus.db.profile.miniIconSize = val
+			NauticusClassic.db.profile.miniIconSize = val
 			val = val * ICON_DEFAULT_SIZE
 			for _, t in pairs(transports) do
 				t.minimap_icon:SetSize(val, val)
@@ -134,10 +133,10 @@ local _options = {
 		desc = L["Change the size of the World Map icons."],
 		order = 500,
 		get = function()
-			return Nauticus.db.profile.worldIconSize
+			return NauticusClassic.db.profile.worldIconSize
 		end,
 		set = function(info, val)
-			Nauticus.db.profile.worldIconSize = val
+			NauticusClassic.db.profile.worldIconSize = val
 			val = val * ICON_DEFAULT_SIZE
 			for _, t in pairs(transports) do
 				t.worldmap_icon:SetSize(val, val)
@@ -153,10 +152,10 @@ local _options = {
 		desc = L["Hide transports of opposite faction from the map, showing only neutral and those of your faction."],
 		order = 675,
 		get = function()
-			return Nauticus.db.profile.factionOnlyIcons
+			return NauticusClassic.db.profile.factionOnlyIcons
 		end,
 		set = function(info, val)
-			Nauticus.db.profile.factionOnlyIcons = val
+			NauticusClassic.db.profile.factionOnlyIcons = val
 			factionOnlyIcons = val
 		end,
 	},
@@ -166,10 +165,10 @@ local _options = {
 		desc = L["Automatically select nearest transport when standing at platform."],
 		order = 150,
 		get = function()
-			return Nauticus.db.char.autoSelect
+			return NauticusClassic.db.char.autoSelect
 		end,
 		set = function(info, val)
-			Nauticus.db.char.autoSelect = val
+			NauticusClassic.db.char.autoSelect = val
 			autoSelect = val
 		end,
 	},
@@ -179,10 +178,10 @@ local _options = {
 		desc = L["Toggle the filter for removing ship crew talk and Zeppelin Master yells from the chat window."],
 		order = 200,
 		get = function()
-			return Nauticus.db.profile.filterChat
+			return NauticusClassic.db.profile.filterChat
 		end,
 		set = function(info, val)
-			Nauticus.db.profile.filterChat = val
+			NauticusClassic.db.profile.filterChat = val
 			filterChat = val
 		end,
 	},
@@ -192,10 +191,10 @@ local _options = {
 		desc = L["Change the alarm delay (in seconds)."],
 		order = 300,
 		get = function()
-			return Nauticus.db.profile.alarmOffset
+			return NauticusClassic.db.profile.alarmOffset
 		end,
 		set = function(info, val)
-			Nauticus.db.profile.alarmOffset = val
+			NauticusClassic.db.profile.alarmOffset = val
 			alarmOffset = val
 		end,
 		min = 0, max = 90, step = 5,
@@ -206,14 +205,14 @@ local _options = {
 		desc = L["Toggle the Mini-Map button."],
 		order = 100,
 		get = function()
-			return not Nauticus.db.profile.minimap.hide
+			return not NauticusClassic.db.profile.minimap.hide
 		end,
 		set = function(info, val)
-			Nauticus.db.profile.minimap.hide = not val
+			NauticusClassic.db.profile.minimap.hide = not val
 			if val then
-				--ldbicon:Show("Nauticus")
+				ldbicon:Show("NauticusClassic")
 			else
-				--ldbicon:Hide("Nauticus")
+				ldbicon:Hide("NauticusClassic")
 			end
 		end,
 	},
@@ -221,7 +220,7 @@ local _options = {
 local options = { type = "group", args = {
 	GUI = {
 		type = 'group',
-		name = "Nauticus",
+		name = "NauticusClassic",
 		args = {
 			nautdesc = {
 				type = 'description',
@@ -255,7 +254,7 @@ local options = { type = "group", args = {
 		},
 	},
 } }
-local optionsSlash = { type = 'group', name = "Nauticus", args = {
+local optionsSlash = { type = 'group', name = "NauticusClassic", args = {
 	[ L["icons"] ] = {
 		type = 'group',
 		name = L["Map Icons"],
@@ -274,7 +273,7 @@ local optionsSlash = { type = 'group', name = "Nauticus", args = {
 	[ L["filter"] ] = _options.filter,
 	[ L["alarm"] ] = _options.alarm,
 } }
-Nauticus.optionsSlash = optionsSlash
+NauticusClassic.optionsSlash = optionsSlash
 
 do
 	local FILTER_NPC = {
@@ -312,7 +311,7 @@ do
 
 	local function ChatFilter_CrewChat(self, event, arg1, arg2)
 		if filterChat and FILTER_NPC[arg2] then
-			--Nauticus:DebugMessage(arg2..": "..arg1)
+			--NauticusClassic:DebugMessage(arg2..": "..arg1)
 			return true -- silence
 		end
 	end
@@ -322,21 +321,21 @@ do
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", ChatFilter_CrewChat)
 end
 
-function Nauticus:OnInitialize()
-	self.db = LibStub("AceDB-3.0"):New("Nauticus4DB", defaults)
-	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Nauticus", options)
-	LibStub("AceConfig-3.0"):RegisterOptionsTable("NauticusSlashCommand", optionsSlash, { "nauticus", "naut" })
-	options.args.NauticusSlashCommand = optionsSlash
-	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Nauticus", nil, nil, "GUI")
-	--ldbicon:Register("Nauticus", self.dataobj, self.db.profile.minimap)
+function NauticusClassic:OnInitialize()
+	self.db = LibStub("AceDB-3.0"):New("NauticusClassic4DB", defaults)
+	LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("NauticusClassic", options)
+	LibStub("AceConfig-3.0"):RegisterOptionsTable("NauticusClassicSlashCommand", optionsSlash, { "nauticus", "naut" })
+	options.args.NauticusClassicSlashCommand = optionsSlash
+	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("NauticusClassic", nil, nil, "GUI")
+	ldbicon:Register("NauticusClassic", self.dataobj, self.db.profile.minimap)
 
 	local f = CreateFrame("Frame", "Naut_TransportSelectFrame", nil, "UIDropDownMenuTemplate")
-	UIDropDownMenu_Initialize(f, function(frame, level) Nauticus:TransportSelectInitialise(frame, level); end, "MENU")
+	UIDropDownMenu_Initialize(f, function(frame, level) NauticusClassic:TransportSelectInitialise(frame, level); end, "MENU")
 
 	self:InitialiseConfig()
 end
 
-function Nauticus:OnEnable()
+function NauticusClassic:OnEnable()
 	self:RegisterEvent("CHAT_MSG_CHANNEL")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE")
@@ -358,7 +357,7 @@ end
 
 local isDrawing
 
-function Nauticus:DrawMapIcons(worldOnly)
+function NauticusClassic:DrawMapIcons(worldOnly)
 	if isDrawing then return; end; isDrawing = true
 
 	local liveData, cycle, index, offsets, x, y, x0, y0, x1, y1, angle, transit_data, fraction,
@@ -445,7 +444,7 @@ function Nauticus:DrawMapIcons(worldOnly)
 	isDrawing = false
 end
 
-function Nauticus:Clock_OnUpdate()
+function NauticusClassic:Clock_OnUpdate()
 	if alarmDinged then
 		alarmCountdown = alarmCountdown - 1
 
@@ -517,7 +516,7 @@ local prevy = 0
 local prevdx = 0
 local prevdy = 0
 
-function Nauticus:RunOnEveryFrame()
+function NauticusClassic:RunOnEveryFrame()
 	local x, y, instanceID = HBD:GetPlayerWorldPosition()
 	local ddx = x - prevx
 	local ddy = y - prevy
@@ -530,7 +529,7 @@ function Nauticus:RunOnEveryFrame()
 	prevy = y
 end
 
-function Nauticus:CheckTriggers_OnUpdate()
+function NauticusClassic:CheckTriggers_OnUpdate()
 	-- remember if we've already triggered a set of coords within the last 30 secs
 	if last_trig and GetTime() > 30.0 + last_trig then last_trig = nil; end
 	if not self.currentZoneTransports or self.currentZoneTransports.virtual then return; end
@@ -612,7 +611,7 @@ function Nauticus:CheckTriggers_OnUpdate()
 	end
 end
 
-function Nauticus:SetKnownTime(instanceID, transit, index, x, y, set)
+function NauticusClassic:SetKnownTime(instanceID, transit, index, x, y, set)
 	local transitData = transitData[transit]
 	local ix, iy = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData.x[index-1], transitData.y[index-1], instanceID)
 	local ix2, iy2 = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData.x[index], transitData.y[index], instanceID)
@@ -653,12 +652,12 @@ function Nauticus:SetKnownTime(instanceID, transit, index, x, y, set)
 	end
 end
 
-function Nauticus:GetCycleByIndex(transit, index)
+function NauticusClassic:GetCycleByIndex(transit, index)
 	return transitData[transit].offset[index]
 end
 
 -- initialise saved variables and data
-function Nauticus:InitialiseConfig()
+function NauticusClassic:InitialiseConfig()
 	--self:DebugMessage("init config...")
 	transports = self.transports
 	self.debug = self.db.global.debug
@@ -666,9 +665,9 @@ function Nauticus:InitialiseConfig()
 	do
 		local version
 		--@non-debug@
-		version = "4.0.5"
+		version = "1.0.0"
 		--@end-non-debug@
-		local title = "Nauticus"
+		local title = "NauticusClassic"
 		if version then
 			self.version = version
 			title = title.." "..version
@@ -737,7 +736,7 @@ function Nauticus:InitialiseConfig()
 	self.db.global.uptime = now
 	self.db.global.timestamp = the_time
 
-	local worldMapOverlay = CreateFrame("Frame", "NauticusWorldMapOverlay", WorldMapButton)
+	local worldMapOverlay = CreateFrame("Frame", "NauticusClassicWorldMapOverlay", WorldMapButton)
 	--tinsert(WorldMapDisplayFrames, worldMapOverlay)
 
 	-- unpack transport data
@@ -802,7 +801,7 @@ function Nauticus:InitialiseConfig()
 		texture_name = ARTWORK_PATH.."MapIcon_"..data.ship_type
 		data.texture_name = texture_name
 
-		frame = CreateFrame("Button", "NauticusMiniIcon", Minimap)
+		frame = CreateFrame("Button", "NauticusClassicMiniIcon", Minimap)
 		data.minimap_icon = frame
 		frame:SetSize(miniIconSize, miniIconSize)
 		texture = frame:CreateTexture(nil, "ARTWORK")
@@ -810,11 +809,11 @@ function Nauticus:InitialiseConfig()
 		texture:SetTexture(texture_name)
 		texture:SetPoint("CENTER")
 		texture:SetSize(miniIconSize * math.sqrt(2), miniIconSize * math.sqrt(2))
-		frame:SetScript("OnEnter", function(self) Nauticus:MapIcon_OnEnter(self) end)
-		frame:SetScript("OnLeave", function(self) Nauticus:MapIcon_OnLeave(self) end)
+		frame:SetScript("OnEnter", function(self) NauticusClassic:MapIcon_OnEnter(self) end)
+		frame:SetScript("OnLeave", function(self) NauticusClassic:MapIcon_OnLeave(self) end)
 		frame:SetID(id)
 
-		frame = CreateFrame("Button", "NauticusWorldIcon", worldMapOverlay)
+		frame = CreateFrame("Button", "NauticusClassicWorldIcon", worldMapOverlay)
 		data.worldmap_icon = frame
 		frame:SetSize(worldIconSize, worldIconSize)
 		texture = frame:CreateTexture(nil, "ARTWORK")
@@ -822,15 +821,15 @@ function Nauticus:InitialiseConfig()
 		texture:SetTexture(texture_name)
 		texture:SetPoint("CENTER")
 		texture:SetSize(worldIconSize * math.sqrt(2), worldIconSize * math.sqrt(2))
-		frame:SetScript("OnEnter", function(self) Nauticus:MapIcon_OnEnter(self) end)
-		frame:SetScript("OnLeave", function(self) Nauticus:MapIcon_OnLeave(self) end)
+		frame:SetScript("OnEnter", function(self) NauticusClassic:MapIcon_OnEnter(self) end)
+		frame:SetScript("OnLeave", function(self) NauticusClassic:MapIcon_OnLeave(self) end)
 		frame:SetID(id)
 	end
 
 	self.packedData = nil -- free some memory (too many indexes to recycle)
 end
 
-function Nauticus:PLAYER_ENTERING_WORLD()
+function NauticusClassic:PLAYER_ENTERING_WORLD()
 	self:UpdateChannel(10)
 
 	if GetRealZoneText() ~= "" then
@@ -842,7 +841,7 @@ end
 
 local zoneChanged
 
-function Nauticus:ZONE_CHANGED_NEW_AREA(loopback)
+function NauticusClassic:ZONE_CHANGED_NEW_AREA(loopback)
 	if zoneChanged then self:CancelTimer(zoneChanged, true); zoneChanged = nil; end
 
 	if not loopback and self.currentZone == GetRealZoneText() then
@@ -854,7 +853,7 @@ function Nauticus:ZONE_CHANGED_NEW_AREA(loopback)
 	self:SetZone(GetRealZoneText())
 end
 
-function Nauticus:SetZone(zone)
+function NauticusClassic:SetZone(zone)
 	-- special case; don't acknowledge zone change when brushing certain zones, keeping map icons
 	if	(self.currentZone == L["Northern Barrens"] and (zone == L["Durotar"] or zone == L["Southern Barrens"])) or
 		(self.currentZone == L["Mulgore"] and zone == L["Southern Barrens"]) or
@@ -865,30 +864,30 @@ function Nauticus:SetZone(zone)
 	if self.db.profile.zoneSpecific then self:RefreshMenu(); end
 end
 
--- function Nauticus:WORLD_MAP_UPDATE()
+-- function NauticusClassic:WORLD_MAP_UPDATE()
 -- 	self:DrawMapIcons(true)
 -- end
 
-function Nauticus:ToggleAlarm()
+function NauticusClassic:ToggleAlarm()
 	alarmSet = not alarmSet
 	if not alarmSet then alarmDinged = false end
-	DEFAULT_CHAT_FRAME:AddMessage(YELLOW.."Nauticus|r - "..WHITE..
+	DEFAULT_CHAT_FRAME:AddMessage(YELLOW.."NauticusClassic|r - "..WHITE..
 		L["Alarm is now: "]..(alarmSet and RED..L["ON"] or GREEN..L["OFF"]).."|r")
 	PlaySound("AuctionWindowOpen")
 end
 
-function Nauticus:IsAlarmSet()
+function NauticusClassic:IsAlarmSet()
 	return alarmSet or alarmDinged
 end
 
-function Nauticus:GetKnownCycle(transport)
+function NauticusClassic:GetKnownCycle(transport)
 	local knownCycle = self.db.global.knownCycles[transport]
 	if knownCycle and knownCycle.since then
 		return GetTime()-knownCycle.since, knownCycle.boots, knownCycle.swaps
 	end
 end
 
-function Nauticus:SetKnownCycle(transport, since, boots, swaps)
+function NauticusClassic:SetKnownCycle(transport, since, boots, swaps)
 	if self.db.global.freeze then return; end
 	local knownCycle = self.db.global.knownCycles[transport]
 	if not knownCycle then
@@ -900,7 +899,7 @@ function Nauticus:SetKnownCycle(transport, since, boots, swaps)
 	self.db.global.timestamp = time()
 end
 
-function Nauticus:HasKnownCycle(transport)
+function NauticusClassic:HasKnownCycle(transport)
 	local knownCycle = self.db.global.knownCycles[transport]
 	if transport ~= NONE then
 		return knownCycle ~= nil and knownCycle.since ~= nil
@@ -919,11 +918,11 @@ do
 	end
 end
 
-function Nauticus:GetFormattedTime(t)
+function NauticusClassic:GetFormattedTime(t)
 	return formattedTimeCache[floor(t)]
 end
 
-function Nauticus:IsTransportListed(transport)
+function NauticusClassic:IsTransportListed(transport)
 	local addtrans = false
 	transport = transports[transport]
 	if self.db.profile.factionSpecific then
@@ -945,7 +944,7 @@ function Nauticus:IsTransportListed(transport)
 	return addtrans
 end
 
-function Nauticus:NextTransportInList()
+function NauticusClassic:NextTransportInList()
 	local isNotEmpty, isFound, addtrans, first
 	for i = 1, #(transports), 1 do
 		addtrans = self:IsTransportListed(i)
@@ -970,7 +969,7 @@ function Nauticus:NextTransportInList()
 	return addtrans
 end
 
-function Nauticus:SetTransport(transport)
+function NauticusClassic:SetTransport(transport)
 	if transport then
 		self.activeTransit = transport
 		self.db.char.activeTransit = self.activeTransit
@@ -992,7 +991,7 @@ end
 
 local lastDebug = GetTime()
 
-function Nauticus:DebugMessage(msg)
+function NauticusClassic:DebugMessage(msg)
 	if true or self.debug then
 		local now = GetTime()
 		ChatFrame4:AddMessage(format("[Naut] ["..YELLOW.."%0.3f|r]: %s", now-lastDebug, msg))

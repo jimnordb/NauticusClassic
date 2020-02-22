@@ -1,6 +1,6 @@
 ﻿
 -- Russian localisation by Yuris Auzinsh (Zuz666)
-local L = LibStub("AceLocale-3.0"):NewLocale("Nauticus", "ruRU")
+local L = LibStub("AceLocale-3.0"):NewLocale("NauticusClassic", "ruRU")
 if not L then return; end
 
 -- addon description
@@ -50,7 +50,7 @@ L["Select None"] = "Снять выделение"
 L["No Transport Selected"] = "Не выбран транспорт"
 L["Not Available"] = "Не доступно"
 L["N/A"] = "Н/Д" -- abbreviation for Not Available
-L["Nauticus Options"] = "Настройки Nauticus"
+L["NauticusClassic Options"] = "Настройки NauticusClassic"
 L["Alarm is now: "] = "Напоминалка: "
 L["ON"] = "Вкл."
 L["OFF"] = "Выкл."
@@ -60,7 +60,7 @@ L["Shows only neutral transports and those of your faction."] = "Показыв�
 L["List relevant to current zone only"] = "Список релевантный текущей зоне"
 L["Shows only transports relevant to your current zone."] = "Показывать только транспорт релевантный текущей зоне."
 L["Hint: Click to cycle transport. Alt-Click to set up alarm"] = "Хинт: Левый клик мыши для циклического переключения транспорта. Alt-клик для установки напоминалки."
-L["New version available! Visit www.drool.me.uk/naut"] = "Доступна новая версия Nauticus! Забрать можно здесь www.drool.me.uk/naut"
+L["New version available! Visit www.drool.me.uk/naut"] = "Доступна новая версия NauticusClassic! Забрать можно здесь www.drool.me.uk/naut"
 
 -- list of ship crew npc's to filter from chat (*must* strictly match the in-game name)
 -- org2uc:

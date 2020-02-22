@@ -1,5 +1,5 @@
 ﻿
-local L = LibStub("AceLocale-3.0"):NewLocale("Nauticus", "koKR")
+local L = LibStub("AceLocale-3.0"):NewLocale("NauticusClassic", "koKR")
 if not L then return; end
 
 -- addon description
@@ -49,7 +49,7 @@ L["Select None"] = true
 L["No Transport Selected"] = true
 L["Not Available"] = true
 L["N/A"] = true -- abbreviation for Not Available
-L["Nauticus Options"] = true
+L["NauticusClassic Options"] = true
 L["Alarm is now: "] = true
 L["ON"] = true
 L["OFF"] = true

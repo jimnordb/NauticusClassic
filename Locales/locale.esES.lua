@@ -1,7 +1,7 @@
 ﻿
 -- Spanish localisation by StiviS
 local AceLocale = LibStub:GetLibrary("AceLocale-3.0")
-local L = AceLocale:NewLocale("Nauticus", "esES") or AceLocale:NewLocale("Nauticus", "esMX")
+local L = AceLocale:NewLocale("NauticusClassic", "esES") or AceLocale:NewLocale("NauticusClassic", "esMX")
 if not L then return; end
 
 -- addon description
@@ -51,7 +51,7 @@ L["Select None"] = "Seleccionar Ninguno"
 L["No Transport Selected"] = "Ningun Transporte Seleccionado"
 L["Not Available"] = "No Disponible"
 L["N/A"] = "N/D" -- abbreviation for Not Available
-L["Nauticus Options"] = "Opciones de Nauticus"
+L["NauticusClassic Options"] = "Opciones de NauticusClassic"
 L["Alarm is now: "] = "Alarma es ahora:" -- check?
 L["ON"] = "Encendido"
 L["OFF"] = "Apagado"

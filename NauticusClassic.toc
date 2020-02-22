@@ -10,20 +10,10 @@
 ## Notes-zhTW: 追蹤環繞艾澤拉斯的飛艇及船隻正確抵達及離開的時間，並即時顯示在世界地圖與小地圖上
 ## Notes-esES: Sigue con precisión los horarios de llegada y salida de barcos y zepelines en todo Azeroth y los muestra en el Mini-Mapa y Mapa del Mundo en tiempo real
 ## OptionalDeps: Ace3, LibDBIcon-1.0, Titan
-## eMail: droolio@gmail.com
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## SavedVariables: Nauticus4DB
-## X-Revision: 158
-## X-Date: 2010-12-24T10:55:58Z
-## X-Embeds: Ace3, LibDBIcon-1.0
+## SavedVariables: NauticusClassic4DB
 ## X-Category: Maps
-## X-eMail: droolio@gmail.com
-## X-Website: http://drool.me.uk/naut
-## X-Curse-Packaged-Version: 4.0.5
-## X-Curse-Project-Name: Nauticus
-## X-Curse-Project-ID: nauticus
-## X-Curse-Repository-ID: wow/nauticus/mainline
 
 #@no-lib-strip@
 Libs\LibStub\LibStub.lua
@@ -36,6 +26,7 @@ Libs\AceConfig-3.0\AceConfig-3.0.xml
 Libs\AceEvent-3.0\AceEvent-3.0.xml
 Libs\AceTimer-3.0\AceTimer-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
+Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 #@end-no-lib-strip@
 Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
 Libs\HereBeDragons\HereBeDragons-2.0.lua

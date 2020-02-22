@@ -2,10 +2,10 @@
 -- constants
 local ARROW = " ‹–› " -- ascii 139, 150, 155
 
-local Nauticus = Nauticus
-local L = LibStub("AceLocale-3.0"):GetLocale("Nauticus")
+local NauticusClassic = NauticusClassic
+local L = LibStub("AceLocale-3.0"):GetLocale("NauticusClassic")
 
-Nauticus.transports = {
+NauticusClassic.transports = {
 
 [1] = {
 vessel_name = L["The Thundercaller"],
@@ -116,7 +116,7 @@ faction = "Horde",
 }
 
 -- accurate round trip times
-Nauticus.rtts = {
+NauticusClassic.rtts = {
 356.315, -- [1]
 244.532697, -- [2]
 319.217729, -- [3]
@@ -134,7 +134,7 @@ Nauticus.rtts = {
 599.155127, -- [15]
 }
 
-Nauticus.transitZones = {
+NauticusClassic.transitZones = {
 [ L["Durotar"] ] = { [1] = true, [2] = true, },
 [ L["Tirisfal Glades"] ] = { [1] = true, [3] = true, },
 [ L["Northern Stranglethorn"] ] = { [2] = true, [3] = true, },
@@ -158,7 +158,7 @@ Nauticus.transitZones = {
 [ L["Undercity"] ] = { [1] = true, [3] = true, [9] = true, virtual = true, }, -- extend to city
 }
 
-Nauticus.platforms = {
+NauticusClassic.platforms = {
 
 [1] = {
 	[1] = {
@@ -310,7 +310,7 @@ Nauticus.platforms = {
 }
 
 -- transport positional data in packed delta format - X:Y:t:(s):a:[c]
-Nauticus.packedData = {
+NauticusClassic.packedData = {
 
 [1] = {
 "0.29805168414816:0.45173769144948:60.00:0:88.6917:plat1", -- [1]
