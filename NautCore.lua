@@ -22,7 +22,7 @@ local L = LibStub("AceLocale-3.0"):GetLocale("Nauticus")
 local HBD = LibStub("HereBeDragons-2.0")
 local Pins = LibStub("HereBeDragons-Pins-2.0")
 --local Astrolabe = DongleStub("Astrolabe-1.0")
-local ldbicon = LibStub("LibDBIcon-1.0")
+--local ldbicon = LibStub("LibDBIcon-1.0")
 
 -- object variables
 Nauticus.versionNum = 404 -- for comparison
@@ -84,7 +84,8 @@ local _options = {
 			showMiniIcons = val
 			if not val then
 				for _, t in pairs(transports) do
-					Pins:RemoveMinimapIcon(self, t.minimap_icon)
+					t.minimap_icon:Hide()
+					--Pins:RemoveMinimapIcon(self, t.minimap_icon)
 					--Astrolabe:RemoveIconFromMinimap(t.minimap_icon)
 				end
 			end
@@ -210,9 +211,9 @@ local _options = {
 		set = function(info, val)
 			Nauticus.db.profile.minimap.hide = not val
 			if val then
-				ldbicon:Show("Nauticus")
+				--ldbicon:Show("Nauticus")
 			else
-				ldbicon:Hide("Nauticus")
+				--ldbicon:Hide("Nauticus")
 			end
 		end,
 	},
@@ -327,7 +328,7 @@ function Nauticus:OnInitialize()
 	LibStub("AceConfig-3.0"):RegisterOptionsTable("NauticusSlashCommand", optionsSlash, { "nauticus", "naut" })
 	options.args.NauticusSlashCommand = optionsSlash
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Nauticus", nil, nil, "GUI")
-	ldbicon:Register("Nauticus", self.dataobj, self.db.profile.minimap)
+	--ldbicon:Register("Nauticus", self.dataobj, self.db.profile.minimap)
 
 	local f = CreateFrame("Frame", "Naut_TransportSelectFrame", nil, "UIDropDownMenuTemplate")
 	UIDropDownMenu_Initialize(f, function(frame, level) Nauticus:TransportSelectInitialise(frame, level); end, "MENU")
@@ -341,16 +342,17 @@ function Nauticus:OnEnable()
 	self:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-	self:ScheduleRepeatingTimer("DrawMapIcons", 0.2) -- every 1/5th of a second
+	self:ScheduleRepeatingTimer("DrawMapIcons", 0.033) -- every 1/30th of a second
 	self:ScheduleRepeatingTimer("Clock_OnUpdate", 1) -- every second (clock tick)
 	self:ScheduleRepeatingTimer("CheckTriggers_OnUpdate", 0.8) -- every 4/5th of a second
+	--self:ScheduleRepeatingTimer("RunOnEveryFrame", 0.01)
 
 	--self:RegisterEvent("WORLD_MAP_UPDATE")
 
 	self:UpdateChannel(10) -- wait 10 seconds before sending to any comms channels
 	self.currentZone = GetRealZoneText()
 	self.currentZoneTransports = self.transitZones[self.currentZone]
-	self:DebugMessage("enabled: "..self.currentZone)
+	--self:DebugMessage("enabled: "..self.currentZone)
 	self:SetTransport()
 end
 
@@ -359,11 +361,10 @@ local isDrawing
 function Nauticus:DrawMapIcons(worldOnly)
 	if isDrawing then return; end; isDrawing = true
 
-	local liveData, cycle, index, offsets, x, y, angle, transit_data, fraction,
+	local liveData, cycle, index, offsets, x, y, x0, y0, x1, y1, angle, transit_data, fraction,
 		isZoning, isZoneInteresting, isFactionInteresting, buttonMini, buttonWorld
 
-	local currentPlayerUIMapID, currentPlayerUIMapType = HBD:GetPlayerZone()
-	local WorldMapVisible = true
+	local WorldMapVisible = WorldMapFrame:IsVisible()
 
 	for id, transport in pairs(transports) do
 		if self:HasKnownCycle(id) then
@@ -405,14 +406,20 @@ function Nauticus:DrawMapIcons(worldOnly)
 							zonings[id][index] == true
 					end
 
+					local zone = 0
+					x0, y0 = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 0)
+					if x0 < 0 or y0 < 0 then
+						x0, y0 = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 1)
+						zone = 1
+					end
+
 					if x and y then
 						if WorldMapVisible and showWorldIcons and isFactionInteresting then
 							if isZoning ~= transport.status then
 								buttonWorld.texture:SetTexture(isZoning and ARTWORK_ZONING or transport.texture_name)
 								transport.status = isZoning
 							end
-							Pins:AddWorldMapIconMap(self, buttonWorld, currentPlayerUIMapID, x, y)
-							--Astrolabe:PlaceIconOnWorldMap(WorldMapButton, buttonWorld, 0, 0, x, y)
+							Pins:AddWorldMapIconWorld(self, buttonWorld, zone, x0, y0, HBD_PINS_WORLDMAP_SHOW_WORLD)
 							buttonWorld.texture:SetRotation(angle)
 						elseif buttonWorld:IsVisible() then
 							buttonWorld:Hide()
@@ -420,19 +427,16 @@ function Nauticus:DrawMapIcons(worldOnly)
 
 						if isZoneInteresting and showMiniIcons and isFactionInteresting then
 							if not worldOnly then
-								Pins:AddMinimapIconMap(self, buttonMini, currentPlayerUIMapID, x, y)
-								--Astrolabe:PlaceIconOnMinimap(buttonMini, 0, 0, x, y)
+								Pins:AddMinimapIconWorld(self, buttonMini, zone, x0, y0, true)
 								buttonMini.texture:SetRotation(angle - (GetCVar("rotateMinimap") == "1" and GetPlayerFacing() or 0))
 								buttonMini:SetAlpha(Pins:IsMinimapIconOnEdge(buttonMini) and 0.6 or 0.9)
 							end
 						elseif buttonMini:IsVisible() then
-							Pins:AddMinimapIconMap(self, buttonMini)
-							--Astrolabe:RemoveIconFromMinimap(buttonMini)
+							buttonMini:Hide()
 						end
 					end
 				elseif buttonMini:IsVisible() then
-					Pins:AddMinimapIconMap(self, buttonMini)
-					--Astrolabe:RemoveIconFromMinimap(buttonMini)
+					buttonMini:Hide()
 				end
 			end
 		end
@@ -503,8 +507,28 @@ function Nauticus:Clock_OnUpdate()
 	self:UpdateDisplay()
 end
 
-local x, y, instanceID, dist, post, last_trig, keep_time
-local old_x, old_y -- old player coords
+local x, y, ax, ay, dax, day, tx, ty, instanceID, dist, post, last_trig, keep_time
+local old_x, old_y, old_ax, old_ay -- old player coords
+local prev_time = 0
+local prev_rot = 0
+
+local prevx = 0
+local prevy = 0
+local prevdx = 0
+local prevdy = 0
+
+function Nauticus:RunOnEveryFrame()
+	local x, y, instanceID = HBD:GetPlayerWorldPosition()
+	local ddx = x - prevx
+	local ddy = y - prevy
+	if prevdx == 0 and prevdy == 0 and (ddx > 0 or ddy > 0) then
+		self:DebugMessage(format("%.14f", GetTime()))
+	end
+	prevdx = ddx
+	prevdy = ddy
+	prevx = x
+	prevy = y
+end
 
 function Nauticus:CheckTriggers_OnUpdate()
 	-- remember if we've already triggered a set of coords within the last 30 secs
@@ -512,13 +536,31 @@ function Nauticus:CheckTriggers_OnUpdate()
 	if not self.currentZoneTransports or self.currentZoneTransports.virtual then return; end
 
 	old_x, old_y = x, y
+	old_ax, old_ay = ax, ay
 	x, y, instanceID = HBD:GetPlayerWorldPosition()
-	if not x or not old_x then return; end
+	ax, ay = HBD:GetAzerothWorldMapCoordinatesFromWorld(x, y, instanceID)
+	if not x or not old_x or not ax or not old_ax then return; end
 
+	dax = ax - old_ax
+	day = ay - old_ay
+	local now = GetTime()
+	dt = now - prev_time
+	prev_time = now
 	dist = HBD:GetWorldDistance(instanceID, x, y, old_x, old_y)
+	
 	--dist = Astrolabe:ComputeDistance(0, 0, x, y, 0, 0, old_x, old_y)
 
 	-- have we moved by at least 6.16 game yards since the last check? this equates to >~110% movement speed
+	local rot = GetPlayerFacing()
+	local drot = deg(rot - prev_rot)
+	if drot < -180 then
+		drot = 360 + drot
+	end
+	if drot > 180 then
+		drot = drot - 360
+	end
+	--self:DebugMessage(format("%.14f:%.14f:%.14f:%.14f:%.3f:0:%.4f:%.4f", ax, ay, dax, day, dt, drot, deg(rot)))
+	prev_rot = rot
 	if 6.16 < dist then
 		if IsSwimming() or UnitOnTaxi("player") then return; end
 		--check X/Y coords against all triggers for all transports in current zone
@@ -528,9 +570,9 @@ function Nauticus:CheckTriggers_OnUpdate()
 				-- within 20 game yards of trigger coords?
 				--if 20.0 > Astrolabe:ComputeDistance(0, 0, x, y,
 				--	0, 0, transitData[transit].x[index], transitData[transit].y[index]) then
-				if 20.0 > HBD:GetWorldDistance(instanceID, x, y,
-					transitData[transit].x[index], transitData[transit].y[index]) then
-
+				tx, ty = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData[transit].x[index], transitData[transit].y[index], instanceID)
+				local tdist = HBD:GetWorldDistance(instanceID, x, y, tx, ty)
+				if tdist and 20.0 > tdist then
 					if post then
 						if last_trig and keep_time then
 							self:SetKnownCycle(transit, GetTime() - last_trig + keep_time, 0, 0)
@@ -557,9 +599,9 @@ function Nauticus:CheckTriggers_OnUpdate()
 					-- within 25 game yards of platform coords?
 					--if 25.0 > Astrolabe:ComputeDistance(0, 0, x, y,
 					--	0, 0, transitData[transit].x[data.index], transitData[transit].y[data.index]) then
-					if 20.0 > HBD:GetWorldDistance(instanceID, x, y,
-						transitData[transit].x[data.index], transitData[transit].y[data.index]) then
-
+					tx, ty = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData[transit].x[data.index], transitData[transit].y[data.index], instanceID)
+					local tdist = HBD:GetWorldDistance(instanceID, x, y, tx, ty)
+					if tdist and 20.0 > tdist then
 						self:DebugMessage("near: "..transit)
 						self:SetTransport(transit)
 						return
@@ -572,13 +614,14 @@ end
 
 function Nauticus:SetKnownTime(instanceID, transit, index, x, y, set)
 	local transitData = transitData[transit]
-	local ix, iy = transitData.x[index-1], transitData.y[index-1]
+	local ix, iy = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData.x[index-1], transitData.y[index-1], instanceID)
+	local ix2, iy2 = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData.x[index], transitData.y[index], instanceID)
 	--local extrapolate = -transitData.dt[index] + transitData.dt[index] *
 	--	(Astrolabe:ComputeDistance(0, 0, x, y, 0, 0, ix, iy) /
 	--	Astrolabe:ComputeDistance(0, 0, transitData.x[index], transitData.y[index], 0, 0, ix, iy) )
 	local extrapolate = -transitData.dt[index] + transitData.dt[index] *
 		(HBD:GetWorldDistance(instanceID, x, y, ix, iy) /
-		HBD:GetWorldDistance(instanceID, transitData.x[index], transitData.y[index], ix, iy) )
+		HBD:GetWorldDistance(instanceID, ix2, iy2, ix, iy) )
 
 	--self:DebugMessage("extrapolate: "..extrapolate)
 	local sum_time = self:GetCycleByIndex(transit, index) + extrapolate
@@ -729,7 +772,7 @@ function Nauticus:InitialiseConfig()
 			transit_data.dx[i] = tonumber(args[1])
 			transit_data.dy[i] = tonumber(args[2])
 			transit_data.dt[i] = tonumber(args[3])
-			d_dir = -rad(args[5])
+			d_dir = rad(args[5])
 			transit_data.dir[i] = d_dir+oldDir
 			transit_data.d_dir[i] = d_dir
 
@@ -759,7 +802,7 @@ function Nauticus:InitialiseConfig()
 		texture_name = ARTWORK_PATH.."MapIcon_"..data.ship_type
 		data.texture_name = texture_name
 
-		frame = CreateFrame("Button", "NauticusMiniIcon"..id, Minimap)
+		frame = CreateFrame("Button", "NauticusMiniIcon", Minimap)
 		data.minimap_icon = frame
 		frame:SetSize(miniIconSize, miniIconSize)
 		texture = frame:CreateTexture(nil, "ARTWORK")
@@ -770,9 +813,8 @@ function Nauticus:InitialiseConfig()
 		frame:SetScript("OnEnter", function(self) Nauticus:MapIcon_OnEnter(self) end)
 		frame:SetScript("OnLeave", function(self) Nauticus:MapIcon_OnLeave(self) end)
 		frame:SetID(id)
-		frame:Hide()
 
-		frame = CreateFrame("Button", nil, worldMapOverlay)
+		frame = CreateFrame("Button", "NauticusWorldIcon", worldMapOverlay)
 		data.worldmap_icon = frame
 		frame:SetSize(worldIconSize, worldIconSize)
 		texture = frame:CreateTexture(nil, "ARTWORK")
@@ -951,7 +993,7 @@ end
 local lastDebug = GetTime()
 
 function Nauticus:DebugMessage(msg)
-	if self.debug then
+	if true or self.debug then
 		local now = GetTime()
 		ChatFrame4:AddMessage(format("[Naut] ["..YELLOW.."%0.3f|r]: %s", now-lastDebug, msg))
 		lastDebug = now

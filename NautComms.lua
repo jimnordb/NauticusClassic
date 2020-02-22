@@ -178,7 +178,7 @@ end
 
 function Nauticus:SendMessage(msg)
 	if not self.comm_disable and GetChannelName(DEFAULT_CHANNEL) then
-		SendChatMessage(msg, "CHANNEL", nil, GetChannelName(DEFAULT_CHANNEL))
+		C_ChatInfo.SendAddonMessage("", msg, "CHANNEL", GetChannelName(DEFAULT_CHANNEL))
 	end
 end
 
