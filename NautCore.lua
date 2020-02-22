@@ -523,7 +523,7 @@ function NauticusClassic:RunOnEveryFrame()
 	local ddx = x - prevx
 	local ddy = y - prevy
 	if prevdx == 0 and prevdy == 0 and (ddx > 0 or ddy > 0) then
-		self:DebugMessage(format("%.14f", GetTime()))
+		self:DebugMessage(format("MOVED: %.14f", GetTime()))
 	end
 	prevdx = ddx
 	prevdy = ddy
