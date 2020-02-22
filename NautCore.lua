@@ -360,7 +360,7 @@ local isDrawing
 function NauticusClassic:DrawMapIcons(worldOnly)
 	if isDrawing then return; end; isDrawing = true
 
-	local liveData, cycle, index, offsets, x, y, x0, y0, x1, y1, angle, transit_data, fraction,
+	local liveData, cycle, index, offsets, x, y, x0, y0, angle, transit_data, fraction,
 		isZoning, isZoneInteresting, isFactionInteresting, buttonMini, buttonWorld
 
 	local WorldMapVisible = WorldMapFrame:IsVisible()
