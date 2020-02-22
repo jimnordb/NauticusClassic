@@ -121,8 +121,7 @@ L["Thunder Bluff"] = true
 
 L["Durotar"] = true
 L["Tirisfal Glades"] = true
-L["Northern Stranglethorn"] = true
-L["The Cape of Stranglethorn"] = true
+L["Stranglethorn Vale"] = true
 L["Northern Barrens"] = true
 L["Southern Barrens"] = true
 L["Wetlands"] = true

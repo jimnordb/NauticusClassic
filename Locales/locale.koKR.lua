@@ -127,8 +127,7 @@ L["Thunder Bluff"] = true -- to do
 
 L["Durotar"] = "듀로타"
 L["Tirisfal Glades"] = "티리스팔 숲"
-L["Northern Stranglethorn"] = true -- to do
-L["The Cape of Stranglethorn"] = true -- to do
+L["Stranglethorn Vale"] = true -- to do
 L["Northern Barrens"] = true -- to do
 L["Southern Barrens"] = true -- to do
 L["Wetlands"] = "저습지"

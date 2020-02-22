@@ -83,9 +83,7 @@ local _options = {
 			showMiniIcons = val
 			if not val then
 				for _, t in pairs(transports) do
-					t.minimap_icon:Hide()
-					--Pins:RemoveMinimapIcon(self, t.minimap_icon)
-					--Astrolabe:RemoveIconFromMinimap(t.minimap_icon)
+					Pins:RemoveMinimapIcon(self, t.minimap_icon)
 				end
 			end
 		end,
@@ -103,7 +101,7 @@ local _options = {
 			showWorldIcons = val
 			if not val then
 				for _, t in pairs(transports) do
-					t.worldmap_icon:Hide()
+					Pins:RemoveWorldMapIcon(self, t.worldmap_icon)
 				end
 			end
 		end,
@@ -360,7 +358,7 @@ local isDrawing
 function NauticusClassic:DrawMapIcons(worldOnly)
 	if isDrawing then return; end; isDrawing = true
 
-	local liveData, cycle, index, offsets, x, y, x0, y0, angle, transit_data, fraction,
+	local liveData, cycle, index, offsets, x, y, zone, xzone, yzone, angle, transit_data, fraction,
 		isZoning, isZoneInteresting, isFactionInteresting, buttonMini, buttonWorld
 
 	local WorldMapVisible = WorldMapFrame:IsVisible()
@@ -405,37 +403,41 @@ function NauticusClassic:DrawMapIcons(worldOnly)
 							zonings[id][index] == true
 					end
 
-					local zone = 0
-					x0, y0 = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 0)
-					if x0 < 0 or y0 < 0 then
-						x0, y0 = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 1)
+					if x < 0.5 then
+						xzone, yzone = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 1)
 						zone = 1
+					else
+						xzone, yzone = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 0)
+						zone = 0
 					end
 
-					if x and y then
+					if xzone and yzone then
 						if WorldMapVisible and showWorldIcons and isFactionInteresting then
 							if isZoning ~= transport.status then
 								buttonWorld.texture:SetTexture(isZoning and ARTWORK_ZONING or transport.texture_name)
 								transport.status = isZoning
 							end
-							Pins:AddWorldMapIconWorld(self, buttonWorld, zone, x0, y0, HBD_PINS_WORLDMAP_SHOW_WORLD)
+							Pins:RemoveWorldMapIcon(self, buttonWorld)
+							Pins:AddWorldMapIconWorld(self, buttonWorld, zone, xzone, yzone, HBD_PINS_WORLDMAP_SHOW_WORLD)
 							buttonWorld.texture:SetRotation(angle)
 						elseif buttonWorld:IsVisible() then
-							buttonWorld:Hide()
+							Pins:RemoveWorldMapIcon(self, buttonWorld)
 						end
 
 						if isZoneInteresting and showMiniIcons and isFactionInteresting then
 							if not worldOnly then
-								Pins:AddMinimapIconWorld(self, buttonMini, zone, x0, y0, true)
+								Pins:RemoveMinimapIcon(self, buttonMini)
+								Pins:AddMinimapIconWorld(self, buttonMini, zone, xzone, yzone, true)
+
 								buttonMini.texture:SetRotation(angle - (GetCVar("rotateMinimap") == "1" and GetPlayerFacing() or 0))
 								buttonMini:SetAlpha(Pins:IsMinimapIconOnEdge(buttonMini) and 0.6 or 0.9)
 							end
 						elseif buttonMini:IsVisible() then
-							buttonMini:Hide()
+							Pins:RemoveMinimapIcon(self, buttonMini)
 						end
 					end
 				elseif buttonMini:IsVisible() then
-					buttonMini:Hide()
+					Pins:RemoveMinimapIcon(self, buttonMini)
 				end
 			end
 		end
@@ -540,16 +542,12 @@ function NauticusClassic:CheckTriggers_OnUpdate()
 	ax, ay = HBD:GetAzerothWorldMapCoordinatesFromWorld(x, y, instanceID)
 	if not x or not old_x or not ax or not old_ax then return; end
 
+	-- start calculate data
 	dax = ax - old_ax
 	day = ay - old_ay
 	local now = GetTime()
 	dt = now - prev_time
 	prev_time = now
-	dist = HBD:GetWorldDistance(instanceID, x, y, old_x, old_y)
-	
-	--dist = Astrolabe:ComputeDistance(0, 0, x, y, 0, 0, old_x, old_y)
-
-	-- have we moved by at least 6.16 game yards since the last check? this equates to >~110% movement speed
 	local rot = GetPlayerFacing()
 	local drot = deg(rot - prev_rot)
 	if drot < -180 then
@@ -560,6 +558,11 @@ function NauticusClassic:CheckTriggers_OnUpdate()
 	end
 	--self:DebugMessage(format("%.14f:%.14f:%.14f:%.14f:%.3f:0:%.4f:%.4f", ax, ay, dax, day, dt, drot, deg(rot)))
 	prev_rot = rot
+	-- end calculate data
+
+
+	dist = HBD:GetWorldDistance(instanceID, x, y, old_x, old_y)
+	-- have we moved by at least 6.16 game yards since the last check? this equates to >~110% movement speed
 	if 6.16 < dist then
 		if IsSwimming() or UnitOnTaxi("player") then return; end
 		--check X/Y coords against all triggers for all transports in current zone
@@ -736,7 +739,7 @@ function NauticusClassic:InitialiseConfig()
 	self.db.global.uptime = now
 	self.db.global.timestamp = the_time
 
-	local worldMapOverlay = CreateFrame("Frame", "NauticusClassicWorldMapOverlay", WorldMapButton)
+	--local worldMapOverlay = CreateFrame("Frame", "NauticusClassicWorldMapOverlay", WorldMapButton)
 	--tinsert(WorldMapDisplayFrames, worldMapOverlay)
 
 	-- unpack transport data
@@ -813,7 +816,7 @@ function NauticusClassic:InitialiseConfig()
 		frame:SetScript("OnLeave", function(self) NauticusClassic:MapIcon_OnLeave(self) end)
 		frame:SetID(id)
 
-		frame = CreateFrame("Button", "NauticusClassicWorldIcon", worldMapOverlay)
+		frame = CreateFrame("Button", "NauticusClassicWorldIcon")
 		data.worldmap_icon = frame
 		frame:SetSize(worldIconSize, worldIconSize)
 		texture = frame:CreateTexture(nil, "ARTWORK")

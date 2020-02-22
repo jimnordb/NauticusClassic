@@ -123,8 +123,7 @@ L["Thunder Bluff"] = true -- to do
 
 L["Durotar"] = "Durotar"
 L["Tirisfal Glades"] = "Claros de Tirisfal"
-L["Northern Stranglethorn"] = true -- to do
-L["The Cape of Stranglethorn"] = true -- to do
+L["Stranglethorn Vale"] = true -- to do
 L["Northern Barrens"] = true -- to do
 L["Southern Barrens"] = true -- to do
 L["Wetlands"] = "Los Humedales"
