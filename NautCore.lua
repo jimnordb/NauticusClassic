@@ -16,7 +16,7 @@ local ARTWORK_DOCKED = ARTWORK_PATH.."Docked"
 local MAX_FORMATTED_TIME = 297 -- the longest route minus 60
 local ICON_DEFAULT_SIZE = 18
 
-NauticusClassic = LibStub("AceAddon-3.0"):NewAddon("NauticusClassic", "AceEvent-3.0", "AceTimer-3.0")
+NauticusClassic = LibStub("AceAddon-3.0"):NewAddon("NauticusClassic", "AceEvent-3.0", "AceComm-3.0", "AceTimer-3.0")
 local NauticusClassic = NauticusClassic
 local L = LibStub("AceLocale-3.0"):GetLocale("NauticusClassic")
 local HBD = LibStub("HereBeDragons-2.0")
@@ -272,7 +272,7 @@ function NauticusClassic:OnInitialize()
 end
 
 function NauticusClassic:OnEnable()
-	self:RegisterEvent("CHAT_MSG_ADDON")
+	--self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -283,6 +283,8 @@ function NauticusClassic:OnEnable()
 	--self:ScheduleRepeatingTimer("RunOnEveryFrame", 0.01)
 
 	--self:RegisterEvent("WORLD_MAP_UPDATE")
+
+	self:RegisterComm("NauticSyncMsg")
 
 	self:UpdateChannel(10) -- wait 10 seconds before sending to any comms channels
 	self.currentZone = GetRealZoneText()

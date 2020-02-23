@@ -19,7 +19,6 @@ local request
 local requestList = {}
 local requestVersion = false
 
-
 function NauticusClassic:CancelRequest()
 	if request then
 		self:CancelTimer(request, true)
@@ -178,10 +177,9 @@ function NauticusClassic:RequestTransport(t)
 end
 
 function NauticusClassic:SendMessage(msg)
-	if not self.comm_disable and GetChannelName(DEFAULT_CHANNEL) then
-		C_ChatInfo.SendAddonMessage(DEFAULT_PREFIX, msg, "PARTY")
-		C_ChatInfo.SendAddonMessage(DEFAULT_PREFIX, msg, "RAID")
-		C_ChatInfo.SendAddonMessage(DEFAULT_PREFIX, msg, "GUILD")
+	if not self.comm_disable then
+		self:SendCommMessage(DEFAULT_PREFIX, msg, "PARTY")
+		--C_ChatInfo.SendAddonMessage(DEFAULT_PREFIX, "TESTINGTESTING", "PARTY")
 	end
 end
 
@@ -228,10 +226,29 @@ local function GetArgs(message, separator)
 	return args
 end
 
+function NauticusClassic:OnCommReceived(prefix, msg, distribution, sender)
+	self:DebugMessage("sender: "..sender.." ; msg: "..msg)
+	if sender ~= UnitName("player") and strlower(prefix) == strlower(DEFAULT_PREFIX) then
+		--self:DebugMessage("sender: "..sender.." ; length: "..strlen(msg))
+		if 254 <= strlen(msg) then return; end -- message too big, probably corrupted
+
+		local args = GetArgs(msg, " ")
+
+		if args[1] == CMD_VERSION then -- version, num
+			self:ReceiveMessage_version(tonumber(args[2]), sender)
+		elseif args[1] == CMD_KNOWN then -- known, { transports }
+			self:ReceiveMessage_known(tonumber(args[2]), args[3], args[4], sender)
+		end
+	end
+end
+
 function NauticusClassic:CHAT_MSG_ADDON(eventName, prefix, msg, channel, sender)
 	local name, realm = UnitFullName("player")
-	if sender ~= name.."-"..realm and strlower(prefix) == strlower(DEFAULT_PREFIX) then
+	if strlower(prefix) == strlower(DEFAULT_PREFIX) then
 		self:DebugMessage("sender: "..sender.." ; length: "..strlen(msg))
+	end
+	if sender ~= name.."-"..realm and strlower(prefix) == strlower(DEFAULT_PREFIX) then
+		--self:DebugMessage("sender: "..sender.." ; length: "..strlen(msg))
 		if 254 <= strlen(msg) then return; end -- message too big, probably corrupted
 
 		local args = GetArgs(msg, " ")
