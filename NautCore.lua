@@ -483,21 +483,21 @@ function NauticusClassic:CheckTriggers_OnUpdate()
 	if not x or not old_x or not ax or not old_ax then return; end
 
 	-- start calculate data
-	dax = ax - old_ax
-	day = ay - old_ay
-	local now = GetTime()
-	dt = now - prev_time
-	prev_time = now
-	local rot = GetPlayerFacing()
-	local drot = deg(rot - prev_rot)
-	if drot < -180 then
-		drot = 360 + drot
-	end
-	if drot > 180 then
-		drot = drot - 360
-	end
-	--self:DebugMessage(format("%.14f:%.14f:%.14f:%.14f:%.3f:0:%.4f:%.4f", ax, ay, dax, day, dt, drot, deg(rot)))
-	prev_rot = rot
+	-- dax = ax - old_ax
+	-- day = ay - old_ay
+	-- local now = GetTime()
+	-- dt = now - prev_time
+	-- prev_time = now
+	-- local rot = GetPlayerFacing()
+	-- local drot = deg(rot - prev_rot)
+	-- if drot < -180 then
+	-- 	drot = 360 + drot
+	-- end
+	-- if drot > 180 then
+	-- 	drot = drot - 360
+	-- end
+	-- self:DebugMessage(format("%.14f:%.14f:%.14f:%.14f:%.3f:0:%.4f:%.4f", ax, ay, dax, day, dt, drot, deg(rot)))
+	-- prev_rot = rot
 	-- end calculate data
 
 
