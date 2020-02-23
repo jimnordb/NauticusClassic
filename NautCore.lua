@@ -272,14 +272,13 @@ function NauticusClassic:OnInitialize()
 end
 
 function NauticusClassic:OnEnable()
-	--self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-	self:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 	self:ScheduleRepeatingTimer("DrawMapIcons", 0.033) -- every 1/30th of a second
 	self:ScheduleRepeatingTimer("Clock_OnUpdate", 1) -- every second (clock tick)
 	self:ScheduleRepeatingTimer("CheckTriggers_OnUpdate", 0.8) -- every 4/5th of a second
+	self:ScheduleRepeatingTimer("UpdateChannel", 60)
 	--self:ScheduleRepeatingTimer("RunOnEveryFrame", 0.01)
 
 	--self:RegisterEvent("WORLD_MAP_UPDATE")
