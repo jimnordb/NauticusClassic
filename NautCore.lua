@@ -933,7 +933,7 @@ local lastDebug = GetTime()
 function NauticusClassic:DebugMessage(msg)
 	if self.debug then
 		local now = GetTime()
-		ChatFrame4:AddMessage(format("[Naut] ["..YELLOW.."%0.3f|r]: %s", now-lastDebug, msg))
+		DEFAULT_CHAT_FRAME:AddMessage(format("[Naut] ["..YELLOW.."%0.3f|r]: %s", now-lastDebug, msg))
 		lastDebug = now
 	end
 end
