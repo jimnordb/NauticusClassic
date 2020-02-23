@@ -179,7 +179,9 @@ end
 
 function NauticusClassic:SendMessage(msg)
 	if not self.comm_disable and GetChannelName(DEFAULT_CHANNEL) then
-		C_ChatInfo.SendAddonMessage(DEFAULT_PREFIX, msg, "CHANNEL", GetChannelName(DEFAULT_CHANNEL))
+		C_ChatInfo.SendAddonMessage(DEFAULT_PREFIX, msg, "PARTY")
+		C_ChatInfo.SendAddonMessage(DEFAULT_PREFIX, msg, "RAID")
+		C_ChatInfo.SendAddonMessage(DEFAULT_PREFIX, msg, "GUILD")
 	end
 end
 
@@ -227,7 +229,8 @@ local function GetArgs(message, separator)
 end
 
 function NauticusClassic:CHAT_MSG_ADDON(eventName, prefix, msg, channel, sender)
-	if sender ~= UnitName("player") and strlower(channel) == strlower(DEFAULT_CHANNEL) and strlower(prefix) == strlower(DEFAULT_PREFIX) then
+	local name, realm = UnitFullName("player")
+	if sender ~= name.."-"..realm and strlower(prefix) == strlower(DEFAULT_PREFIX) then
 		self:DebugMessage("sender: "..sender.." ; length: "..strlen(msg))
 		if 254 <= strlen(msg) then return; end -- message too big, probably corrupted
 
