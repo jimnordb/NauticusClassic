@@ -15,7 +15,6 @@ L["worldsize"] = true
 L["faction"] = true
 L["minibutton"] = true
 L["autoselect"] = true
-L["filter"] = true
 L["alarm"] = true
 
 -- options
@@ -35,8 +34,6 @@ L["Faction only"] = "Nur Fraktion"
 L["Hide transports of opposite faction from the map, showing only neutral and those of your faction."] = "Verstecke Transportmittel der gegnerischen Fraktion auf der Karte und zeige nur neutrale und die von Deiner Fraktion."
 L["Auto select transport"] = "Automatische Transportauswahl"
 L["Automatically select nearest transport when standing at platform."] = "Automatisch den nächstgelegenen Transport auswählen, wenn man auf einer Plattform steht."
-L["Crew chat filter"] = "Crewgesprächfilter"
-L["Toggle the filter for removing ship crew talk and Zeppelin Master yells from the chat window."] = "Ein-/Ausschalten des Filters für die Gespräche der Schiffscrew und der Zeppelinmeister für das Chatfenster."
 L["Alarm delay"] = "Alarm Zeit"
 L["Change the alarm delay (in seconds)."] = "Ändert die Zeit ab, wann der Alarm vor dem Abflug ertönen soll (in Sekunden)."
 L["Mini-Map button"] = "Minikarte Button"
@@ -60,39 +57,7 @@ L["Shows only neutral transports and those of your faction."] = "Zeigt nur neutr
 L["List relevant to current zone only"] = "Zeige nur Transportmittel der momentanen Zone" -- re do?
 L["Shows only transports relevant to your current zone."] = "Zeigt nur Transportmittel der momentanen Zone." -- check?
 L["Hint: Click to cycle transport. Alt-Click to set up alarm"] = "Hinweis: Klick - Reiseroute auswählen. Alt-Klick - Alarm aktivieren."
-L["New version available! Visit www.drool.me.uk/naut"] = "Neue Version verfügbar! Schau auf www.drool.me.uk/naut"
-
--- list of ship crew npc's to filter from chat (*must* strictly match the in-game name)
--- org2uc:
-L["Frezza"] = "Frezza"
-L["Zapetta"] = "Zapetta"
-L["Sky-Captain Cloudkicker"] = "Himmelskapitän Wolkenwirbler"
-L["Chief Officer Coppernut"] = "Erster Offizier Kupfernuss"
-L["Navigator Fairweather"] = "Navigator Schönwetter"
--- uc2gg:
-L["Hin Denburg"] = "Hin Denburg"
-L["Navigator Hatch"] = "Navigator Bodenluke"
-L["Chief Officer Hammerflange"] = "Erster Offizier Hammerflansch"
-L["Sky-Captain Cableclamp"] = "Himmelskapitän Kabelspant"
--- org2gg:
-L["Snurk Bucksquick"] = "Snurk Zasterwill"
--- mh2ther:
-L["Captain \"Stash\" Torgoley"] = "Kapitän \"Schatzsucher\" Torgoley"
-L["First Mate Kowalski"] = "Erster Maat Kowalski"
-L["Navigator Mehran"] = "Navigationsoffizier Mehran"
--- uc2ven
-L["Meefi Farthrottle"] = "Meefi Weitdrossel"
-L["Drenk Spannerspark"] = "Drenk Spannfunke"
--- war2org
-L["Greeb Ramrocket"] = "Grieb Rammrakete"
-L["Nargo Screwbore"] = "Nargo Bohrschraub"
--- wg2wg:
-L["Harrowmeiser"] = "Eggenmeiser"
--- tb2org:
-L["Krendle Bigpockets"] = true -- to do
-L["Zelli Hotnozzle"] = true -- to do
-L["Sky-Captain \"Dusty\" Blastnut"] = true -- to do
-L["Watcher Tolwe"] = true -- to do
+L["New version available! Visit github.com/DungFu/NauticusClassic"] = "Neue Version verfügbar! Schau auf github.com/DungFu/NauticusClassic"
 
 -- ship names
 L["The Thundercaller"] = "Die Donnersturm"
@@ -103,78 +68,41 @@ L["The Bravery"] = "Die Bravado"
 L["The Lady Mehley"] = "Die Lady Mehley"
 L["The Moonspray"] = "Die Mondgischt"
 L["Feathermoon Ferry"] = "Mondfederfähre"
-L["Elune's Blessing"] = "Elunes Segen"
-L["The Mighty Wind"] = "Die Windesmacht"
-L["Cloudkisser"] = "Die Wolkenkuss"
-L["Walker of Waves"] = "Wellenreiter"
-L["Green Island"] = "Grüne Insel"
-L["The Kraken"] = "Die Kraken"
-L["Northspear"] = "Nordspeer"
-L["Captured Zeppelin"] = "Eroberter Zeppelin"
-L["The Zephyr"] = true -- to do
 
 -- zones (*must* strictly match the in-game name)
 L["Orgrimmar"] = "Orgrimmar"
 L["Undercity"] = "Unterstadt"
-L["The Exodar"] = "Die Exodar"
-L["Stormwind City"] = "Sturmwind"
-L["Thunder Bluff"] = true -- to do
-
 L["Durotar"] = "Durotar"
 L["Tirisfal Glades"] = "Tirisfal"
-L["Stranglethorn Vale"] = true -- to do
-L["Northern Barrens"] = true -- to do
-L["Southern Barrens"] = true -- to do
+L["Stranglethorn Vale"] = "Schlingendorntal"
+L["The Barrens"] = "Das Brachland"
 L["Wetlands"] = "Sumpfland"
+L["Darkshore"] = "Dunkelk\195\188ste"
 L["Dustwallow Marsh"] = "Düstermarschen"
 L["Teldrassil"] = "Teldrassil"
-L["Azuremyst Isle"] = "Azurmythosinsel"
-L["Elwynn Forest"] = true -- to do
-L["Westfall"] = "Westfall"
-L["Borean Tundra"] = "Boreanische Tundra"
-L["Howling Fjord"] = "Der heulende Fjord"
-L["Dragonblight"] = "Drachenöde"
-L["Mulgore"] = true -- to do
-
-L["The Veiled Sea"] = "Das verhüllte Meer"
-L["Twisting Nether"] = "Wirbelnder Nether"
-L["The Frozen Sea"] = "Die gefrorene See"
-L["The Great Sea"] = true -- to do
+L["Feralas"] = "Feralas"
 
 -- subzones
 L["Grom'gol"] = "Grom'gol"
 L["Booty Bay"] = "Beutebucht"
 L["Ratchet"] = "Ratschet"
 L["Menethil Harbor"] = "Menethil"
+L["Auberdine"] = "Auberdine"
 L["Theramore"] = "Theramore"
 L["Rut'Theran Village"] = "Rut'Theran"
-L["Warsong Hold"] = "Kriegshymnenfeste"
-L["Vengeance Landing"] = "Hafen der Vergeltung"
-L["Valiance Keep"] = "Valianzfeste"
-L["Valgarde"] = "Valgarde"
-L["Unu'pe"] = "Unu'pe"
-L["Moa'ki Harbor"] = "Hafen von Moa'ki"
-L["Kamagua"] = "Kamagua"
-L["Westguard Keep"] = "Westwache"
+L["Sardor Isle"] = "Insel Sardor"
+L["Feathermoon"] = "Mondfederfeste"
+L["Forgotten Coast"] = "Die vergessene K\195\188ste"
 
 -- abbreviations
 L["Org"] = "Org"  -- Orgrimmar
 L["UC"]  = "Us"   -- Undercity
-L["Exo"] = "Exo"  -- The Exodar
-L["SC"]  = "Stur" -- Stormwind City
-L["TB"]  = true   -- to do; Thunder Bluff
-
 L["GG"]  = "GG"   -- Grom'gol
 L["BB"]  = "BB"   -- Booty Bay
 L["Rat"] = "Rat"  -- Ratchet
 L["MH"]  = "Mene" -- Menethil Harbor
+L["Aub"] = "Aub"  -- Auberdine
 L["Th"]  = "Ther" -- Theramore
 L["RTV"] = "Rut"  -- Rut'Theran Village
-L["War"] = "Khf"  -- Warsong Hold
-L["Ven"] = "HdV"  -- Vengeance Landing
-L["VK"]  = "Vf"   -- Valiance Keep
-L["VG"]  = "Vg"   -- Valgarde
-L["Unu"] = "Unu"  -- Unu'pe
-L["Moa"] = "Moa"  -- Moa'ki Harbor
-L["Kam"] = "Kam"  -- Kamagua
-L["WGK"] = "Ww"   -- Westguard Keep
+L["FMS"] = "Mond" -- Feathermoon
+L["Fer"] = "Fer"  -- Feralas

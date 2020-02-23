@@ -7,6 +7,7 @@ local WHITE   = "|cffffffff"
 local GREY    = "|cffbababa"
 
 local DEFAULT_CHANNEL = "NauticSync" -- do not change!
+local DEFAULT_PREFIX = "NauticSyncMsg" -- do not change!
 local DATA_VERSION = 1 -- route calibration versioning
 local CMD_VERSION = "VER"
 local CMD_KNOWN = "KWN4"
@@ -178,16 +179,16 @@ end
 
 function NauticusClassic:SendMessage(msg)
 	if not self.comm_disable and GetChannelName(DEFAULT_CHANNEL) then
-		C_ChatInfo.SendAddonMessage("", msg, "CHANNEL", GetChannelName(DEFAULT_CHANNEL))
+		C_ChatInfo.SendAddonMessage(DEFAULT_PREFIX, msg, "CHANNEL", GetChannelName(DEFAULT_CHANNEL))
 	end
 end
 
 local joinedChannel
 
 -- if we joined a channel
-function NauticusClassic:CHAT_MSG_CHANNEL_NOTICE(eventName, noticeType, _, _, numAndName, _, _, _, num, channel)
+function NauticusClassic:CHAT_MSG_CHANNEL_NOTICE(eventName, noticeType, _, _, _, _, _, _, _, channel)
 	if noticeType == "YOU_JOINED" then
-		--self:DebugMessage("joined: "..channel)
+		self:DebugMessage("joined: "..channel)
 
 		if strlower(channel) ~= strlower(DEFAULT_CHANNEL) and
 			GetChannelName(DEFAULT_CHANNEL) == 0 then
@@ -208,7 +209,7 @@ function NauticusClassic:CHAT_MSG_CHANNEL_NOTICE(eventName, noticeType, _, _, nu
 		local newZone = select(3, strfind(channel, "^.+ %- (.+)$"))
 
 		if newZone and self.transitZones[newZone] then
-			--self:DebugMessage("channel: "..newZone)
+			self:DebugMessage("channel: "..newZone)
 			self:SetZone(newZone)
 		end
 	end
@@ -225,9 +226,9 @@ local function GetArgs(message, separator)
 	return args
 end
 
-function NauticusClassic:CHAT_MSG_CHANNEL(eventName, msg, sender, _, numAndName, _, _, _, _, channel)
-	if sender ~= UnitName("player") and strlower(channel) == strlower(DEFAULT_CHANNEL) then
-		--self:DebugMessage("sender: "..sender.." ; length: "..strlen(msg))
+function NauticusClassic:CHAT_MSG_ADDON(eventName, prefix, msg, channel, sender)
+	if sender ~= UnitName("player") and strlower(channel) == strlower(DEFAULT_CHANNEL) and strlower(prefix) == strlower(DEFAULT_PREFIX) then
+		self:DebugMessage("sender: "..sender.." ; length: "..strlen(msg))
 		if 254 <= strlen(msg) then return; end -- message too big, probably corrupted
 
 		local args = GetArgs(msg, " ")
@@ -241,7 +242,7 @@ function NauticusClassic:CHAT_MSG_CHANNEL(eventName, msg, sender, _, numAndName,
 end
 
 function NauticusClassic:ReceiveMessage_version(clientversion, sender)
-	--self:DebugMessage(sender.." says: version "..clientversion)
+	self:DebugMessage(sender.." says: version "..clientversion)
 
 	if clientversion > self.versionNum then
 		if not self.db.global.newerVersion then
@@ -444,12 +445,12 @@ function NauticusClassic:UpdateChannel(wait)
 	end
 end
 
-do
-	local function ChatFilter_DataChannel(self, event, ...)
-		if strlower(select(9, ...)) == strlower(DEFAULT_CHANNEL) and not NauticusClassic.debug then
-			return true -- silence
-		end
-	end
+-- do
+-- 	local function ChatFilter_DataChannel(self, event, ...)
+-- 		if strlower(select(9, ...)) == strlower(DEFAULT_CHANNEL) and not NauticusClassic.debug then
+-- 			return true -- silence
+-- 		end
+-- 	end
 
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", ChatFilter_DataChannel)
-end
+-- 	ChatFrame_AddMessageEventFilter("CHAT_MSG_ADDON", ChatFilter_DataChannel)
+-- end

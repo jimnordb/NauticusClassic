@@ -31,15 +31,15 @@ faction = "Horde",
 [4] = {
 vessel_name = L["The Maiden's Fancy"],
 ship_type = "Boat",
-name = L["Northern Barrens"]..ARROW..L["Stranglethorn Vale"],
+name = L["The Barrens"]..ARROW..L["Stranglethorn Vale"],
 short_name = L["Rat"]..ARROW..L["BB"],
 faction = "Neutral",
 },
 [5] = {
 vessel_name = L["The Bravery"],
 ship_type = "Boat",
-name = L["Teldrassil"]..ARROW..L["Stormwind City"],
-short_name = L["RTV"]..ARROW..L["SC"],
+name = L["Wetlands"]..ARROW..L["Darkshore"],
+short_name = L["MH"]..ARROW..L["Aub"],
 faction = "Alliance",
 },
 [6] = {
@@ -47,6 +47,20 @@ vessel_name = L["The Lady Mehley"],
 ship_type = "Boat",
 name = L["Wetlands"]..ARROW..L["Dustwallow Marsh"],
 short_name = L["MH"]..ARROW..L["Th"],
+faction = "Alliance",
+},
+[7] = {
+vessel_name = L["The Moonspray"],
+ship_type = "BoatNE",
+name = L["Teldrassil"]..ARROW..L["Darkshore"],
+short_name = L["RTV"]..ARROW..L["Aub"],
+faction = "Alliance",
+},
+[8] = {
+vessel_name = L["Feathermoon Ferry"],
+ship_type = "BoatNE",
+name = L["Sardor Isle"]..ARROW..L["Feralas"],
+short_name = L["FMS"]..ARROW..L["Fer"],
 faction = "Alliance",
 },
 
@@ -60,17 +74,20 @@ NauticusClassic.rtts = {
 0.0, -- [4]
 0.0, -- [5]
 0.0, -- [6]
+0.0, -- [7]
+0.0, -- [8]
 }
 
 NauticusClassic.transitZones = {
 [ L["Durotar"] ] = { [1] = true, [2] = true, },
 [ L["Tirisfal Glades"] ] = { [1] = true, [3] = true, },
 [ L["Stranglethorn Vale"] ] = { [2] = true, [3] = true, [4] = true, },
-[ L["Northern Barrens"] ] = { [4] = true, },
-[ L["Wetlands"] ] = { [6] = true, },
+[ L["The Barrens"] ] = { [4] = true, },
+[ L["Wetlands"] ] = { [5] = true, [6] = true, },
+[ L["Darkshore"] ] = { [5] = true, [7] = true, },
 [ L["Dustwallow Marsh"] ] = { [6] = true, },
 [ L["Teldrassil"] ] = { [5] = true, },
-[ L["Stormwind City"] ] = { [5] = true, },
+[ L["Feralas"] ] = { [8] = true, },
 [ L["Orgrimmar"] ] = { [1] = true, [2] = true, },
 [ L["Undercity"] ] = { [1] = true, [3] = true, virtual = true, }, -- extend to city
 }
@@ -109,7 +126,7 @@ NauticusClassic.platforms = {
 },
 [4] = {
 	[1] = {
-		name = L["Ratchet"]..", "..L["Northern Barrens"],
+		name = L["Ratchet"]..", "..L["The Barrens"],
 		ebv = L["Rat"],
 	},
 	[2] = {
@@ -119,12 +136,12 @@ NauticusClassic.platforms = {
 },
 [5] = {
 	[1] = {
-		name = L["Rut'Theran Village"]..", "..L["Teldrassil"],
-		ebv = L["RTV"],
+		name = L["Menethil Harbor"]..", "..L["Wetlands"],
+		ebv = L["MH"],
 	},
 	[2] = {
-		name = L["Stormwind City"],
-		ebv = L["SC"],
+		name = L["Auberdine"]..", "..L["Darkshore"],
+		ebv = L["Aub"],
 	},
 },
 [6] = {
@@ -135,6 +152,26 @@ NauticusClassic.platforms = {
 	[2] = {
 		name = L["Theramore"]..", "..L["Dustwallow Marsh"],
 		ebv = L["Th"],
+	},
+},
+[7] = {
+	[1] = {
+		name = L["Rut'Theran Village"]..", "..L["Teldrassil"],
+		ebv = L["RTV"],
+	},
+	[2] = {
+		name = L["Auberdine"]..", "..L["Darkshore"],
+		ebv = L["Aub"],
+	},
+},
+[8] = {
+	[1] = {
+		name = L["Feathermoon"]..", "..L["Sardor Isle"],
+		ebv = L["FMS"],
+	},
+	[2] = {
+		name = L["Forgotten Coast"]..", "..L["Feralas"],
+		ebv = L["Fer"],
 	},
 },
 
@@ -788,6 +825,12 @@ NauticusClassic.packedData = {
 
 },
 [6] = {
+
+},
+[7] = {
+
+},
+[8] = {
 
 },
 

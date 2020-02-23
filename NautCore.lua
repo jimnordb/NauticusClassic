@@ -13,7 +13,7 @@ local ARTWORK_ZONING = ARTWORK_PATH.."MapIcon_Zoning"
 local ARTWORK_DEPARTING = ARTWORK_PATH.."Departing"
 local ARTWORK_IN_TRANSIT = ARTWORK_PATH.."Transit"
 local ARTWORK_DOCKED = ARTWORK_PATH.."Docked"
-local MAX_FORMATTED_TIME = 541 -- the longest route minus 60
+local MAX_FORMATTED_TIME = 297 -- the longest route minus 60
 local ICON_DEFAULT_SIZE = 18
 
 NauticusClassic = LibStub("AceAddon-3.0"):NewAddon("NauticusClassic", "AceEvent-3.0", "AceTimer-3.0")
@@ -42,13 +42,12 @@ local transports
 local transitData = {}
 local triggers = {}
 local zonings = {}
-local filterChat, autoSelect, showMiniIcons, worldIconSize, factionOnlyIcons
+local autoSelect, showMiniIcons, worldIconSize, factionOnlyIcons
 
 local defaults = {
 	profile = {
 		factionSpecific = true,
 		zoneSpecific = false,
-		filterChat = true,
 		alarmOffset = 20,
 		miniIconSize = 1,
 		worldIconSize = 1.25,
@@ -61,7 +60,7 @@ local defaults = {
 	},
 	global = {
 		knownCycles = {},
-		debug = false,
+		debug = true,
 	},
 	char = {
 		activeTransit = NONE,
@@ -170,19 +169,6 @@ local _options = {
 			autoSelect = val
 		end,
 	},
-	filter = {
-		type = 'toggle',
-		name = L["Crew chat filter"],
-		desc = L["Toggle the filter for removing ship crew talk and Zeppelin Master yells from the chat window."],
-		order = 200,
-		get = function()
-			return NauticusClassic.db.profile.filterChat
-		end,
-		set = function(info, val)
-			NauticusClassic.db.profile.filterChat = val
-			filterChat = val
-		end,
-	},
 	alarm = {
 		type = 'range',
 		name = L["Alarm delay"],
@@ -232,7 +218,6 @@ local options = { type = "group", args = {
 			},
 			minibutton = _options.minibutton,
 			autoselect = _options.autoselect,
-			filter = _options.filter,
 			alarm = _options.alarm,
 			header2 = {
 				type = 'header',
@@ -268,56 +253,9 @@ local optionsSlash = { type = 'group', name = "NauticusClassic", args = {
 	},
 	[ L["minibutton"] ] = _options.minibutton,
 	[ L["autoselect"] ] = _options.autoselect,
-	[ L["filter"] ] = _options.filter,
 	[ L["alarm"] ] = _options.alarm,
 } }
 NauticusClassic.optionsSlash = optionsSlash
-
-do
-	local FILTER_NPC = {
-	-- org2uc:
-	[ L["Frezza"] ] = true,
-	[ L["Zapetta"] ] = true,
-	[ L["Sky-Captain Cloudkicker"] ] = true,
-	[ L["Chief Officer Coppernut"] ] = true,
-	[ L["Navigator Fairweather"] ] = true,
-	-- uc2gg:
-	[ L["Hin Denburg"] ] = true,
-	[ L["Navigator Hatch"] ] = true,
-	[ L["Chief Officer Hammerflange"] ] = true,
-	[ L["Sky-Captain Cableclamp"] ] = true,
-	-- org2gg:
-	[ L["Snurk Bucksquick"] ] = true,
-	-- mh2ther:
-	[ L["Captain \"Stash\" Torgoley"] ] = true,
-	[ L["First Mate Kowalski"] ] = true,
-	[ L["Navigator Mehran"] ] = true,
-	-- uc2ven:
-	[ L["Meefi Farthrottle"] ] = true,
-	[ L["Drenk Spannerspark"] ] = true,
-	-- war2org:
-	[ L["Greeb Ramrocket"] ] = true,
-	[ L["Nargo Screwbore"] ] = true,
-	-- wg2wg:
-	[ L["Harrowmeiser"] ] = true,
-	-- tb2org:
-	[ L["Krendle Bigpockets"] ] = true,
-	[ L["Zelli Hotnozzle"] ] = true,
-	[ L["Sky-Captain \"Dusty\" Blastnut"] ] = true,
-	[ L["Watcher Tolwe"] ] = true,
-	}
-
-	local function ChatFilter_CrewChat(self, event, arg1, arg2)
-		if filterChat and FILTER_NPC[arg2] then
-			--NauticusClassic:DebugMessage(arg2..": "..arg1)
-			return true -- silence
-		end
-	end
-
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_SAY", ChatFilter_CrewChat)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_YELL", ChatFilter_CrewChat)
-	ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_EMOTE", ChatFilter_CrewChat)
-end
 
 function NauticusClassic:OnInitialize()
 	self.db = LibStub("AceDB-3.0"):New("NauticusClassic4DB", defaults)
@@ -334,7 +272,7 @@ function NauticusClassic:OnInitialize()
 end
 
 function NauticusClassic:OnEnable()
-	self:RegisterEvent("CHAT_MSG_CHANNEL")
+	self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -698,7 +636,6 @@ function NauticusClassic:InitialiseConfig()
 
 	alarmOffset = self.db.profile.alarmOffset
 	autoSelect = self.db.char.autoSelect
-	filterChat = self.db.profile.filterChat
 	showMiniIcons = self.db.profile.showMiniIcons
 	showWorldIcons = self.db.profile.showWorldIcons
 	factionOnlyIcons = self.db.profile.factionOnlyIcons
@@ -858,9 +795,7 @@ end
 
 function NauticusClassic:SetZone(zone)
 	-- special case; don't acknowledge zone change when brushing certain zones, keeping map icons
-	if	(self.currentZone == L["Northern Barrens"] and (zone == L["Durotar"] or zone == L["Southern Barrens"])) or
-		(self.currentZone == L["Mulgore"] and zone == L["Southern Barrens"]) or
-		(self.currentZone == L["Stormwind City"] and (zone == L["Elwynn Forest"] or zone == L["The Great Sea"])) then return; end
+	if	(self.currentZone == L["The Barrens"] and zone == L["Durotar"]) then return; end
 
 	self.currentZone = zone
 	self.currentZoneTransports = self.transitZones[zone]
@@ -995,7 +930,7 @@ end
 local lastDebug = GetTime()
 
 function NauticusClassic:DebugMessage(msg)
-	if true or self.debug then
+	if self.debug then
 		local now = GetTime()
 		ChatFrame4:AddMessage(format("[Naut] ["..YELLOW.."%0.3f|r]: %s", now-lastDebug, msg))
 		lastDebug = now
