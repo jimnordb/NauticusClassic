@@ -6,7 +6,6 @@ local YELLOW  = "|cffffff00"
 local WHITE   = "|cffffffff"
 local GREY    = "|cffbababa"
 
-local DEFAULT_PREFIX = "NauticSync" -- do not change!
 local DATA_VERSION = 1 -- route calibration versioning
 local CMD_VERSION = "VER"
 local CMD_KNOWN = "KWN4"
@@ -177,9 +176,11 @@ end
 
 function NauticusClassic:SendMessage(msg)
 	if not self.comm_disable then
-		self:SendCommMessage(DEFAULT_PREFIX, msg, "RAID")
-		self:SendCommMessage(DEFAULT_PREFIX, msg, "GUILD")
-		self:SendCommMessage(DEFAULT_PREFIX, msg, "YELL")
+		self:SendCommMessage(self.DEFAULT_PREFIX, msg, "RAID")
+		if IsInGuild() then
+			self:SendCommMessage(self.DEFAULT_PREFIX, msg, "GUILD")
+		end
+		self:SendCommMessage(self.DEFAULT_PREFIX, msg, "YELL")
 	end
 end
 
@@ -195,8 +196,8 @@ local function GetArgs(message, separator)
 end
 
 function NauticusClassic:OnCommReceived(prefix, msg, distribution, sender)
-	if sender ~= UnitName("player") and strlower(prefix) == strlower(DEFAULT_PREFIX) then
-		--self:DebugMessage("sender: "..sender.." ; length: "..strlen(msg))
+	if sender ~= UnitName("player") and strlower(prefix) == strlower(self.DEFAULT_PREFIX) then
+		self:DebugMessage("sender: "..sender.." ; length: "..strlen(msg))
 		if 254 <= strlen(msg) then return; end -- message too big, probably corrupted
 
 		local args = GetArgs(msg, " ")
@@ -384,7 +385,7 @@ function NauticusClassic:StringToKnown(transports)
 	return trans_tab
 end
 
-local inChannel, updateChannel
+local updateChannel
 
 function NauticusClassic:UpdateChannel(wait)
 	if updateChannel then self:CancelTimer(updateChannel, true); updateChannel = nil; end
@@ -394,21 +395,17 @@ function NauticusClassic:UpdateChannel(wait)
 		return
 	end
 
-	if not inChannel then
-		inChannel = true
-
-		--[===[@debug@
-		if self.debug then
-			self:ScheduleTimer("RequestAllTransports", 5)
-			return
-		end
-		--@end-debug@]===]
-
-		for id in pairs(self.transports) do
-			requestList[id] = true
-		end
-
-		requestVersion = true
-		self:DoRequest(5 + math.random() * 15)
+	--[===[@debug@
+	if self.debug then
+		self:ScheduleTimer("RequestAllTransports", 5)
+		return
 	end
+	--@end-debug@]===]
+
+	for id in pairs(self.transports) do
+		requestList[id] = true
+	end
+
+	requestVersion = true
+	self:DoRequest(5 + math.random() * 15)
 end

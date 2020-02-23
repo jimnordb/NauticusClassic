@@ -24,6 +24,7 @@ local Pins = LibStub("HereBeDragons-Pins-2.0")
 local ldbicon = LibStub("LibDBIcon-1.0")
 
 -- object variables
+NauticusClassic.DEFAULT_PREFIX = "NauticSync" -- do not change!
 NauticusClassic.versionNum = 100 -- for comparison
 NauticusClassic.lowestNameTime = "--"
 NauticusClassic.tempText = ""
@@ -60,7 +61,7 @@ local defaults = {
 	},
 	global = {
 		knownCycles = {},
-		debug = true,
+		debug = false,
 	},
 	char = {
 		activeTransit = NONE,
@@ -274,6 +275,7 @@ end
 function NauticusClassic:OnEnable()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterComm(self.DEFAULT_PREFIX)
 
 	self:ScheduleRepeatingTimer("DrawMapIcons", 0.033) -- every 1/30th of a second
 	self:ScheduleRepeatingTimer("Clock_OnUpdate", 1) -- every second (clock tick)
@@ -283,11 +285,10 @@ function NauticusClassic:OnEnable()
 
 	--self:RegisterEvent("WORLD_MAP_UPDATE")
 
-	self:RegisterComm("NauticSyncMsg")
-
 	self:UpdateChannel(10) -- wait 10 seconds before sending to any comms channels
 	self.currentZone = GetRealZoneText()
 	self.currentZoneTransports = self.transitZones[self.currentZone]
+
 	--self:DebugMessage("enabled: "..self.currentZone)
 	self:SetTransport()
 end
