@@ -74,13 +74,13 @@ L["Orgrimmar"] = "Orgrimmar"
 L["Undercity"] = "Fossoyeuse"
 L["Durotar"] = "Durotar"
 L["Tirisfal Glades"] = "Clairières de Tirisfal"
-L["Stranglethorn Vale"] = "Vall\195\169e de Strangleronce"
+L["Stranglethorn Vale"] = "Vallée de Strangleronce"
 L["The Barrens"] = "Les Tarides"
 L["Wetlands"] = "Les Paluns"
 L["Darkshore"] = "Sombrivage"
 L["Dustwallow Marsh"] = "Marécage d'Âprefange"
 L["Teldrassil"] = "Teldrassil"
-L["Feralas"] = "F\195\169ralas"
+L["Feralas"] = "Féralas"
 
 -- subzones
 L["Grom'gol"] = "Grom'gol"
@@ -92,7 +92,7 @@ L["Theramore"] = "Theramore"
 L["Rut'Theran Village"] = "Rut'Theran"
 L["Sardor Isle"] = "Ile de Sardor"
 L["Feathermoon"] = "Pennelune"
-L["Forgotten Coast"] = "Cote oubli\195\169e"
+L["Forgotten Coast"] = "Côte oubliée"
 
 -- abbreviations
 L["Org"] = "Org" -- Orgrimmar

@@ -77,7 +77,7 @@ L["Tirisfal Glades"] = "Tirisfal"
 L["Stranglethorn Vale"] = "Schlingendorntal"
 L["The Barrens"] = "Das Brachland"
 L["Wetlands"] = "Sumpfland"
-L["Darkshore"] = "Dunkelk\195\188ste"
+L["Darkshore"] = "Dunkelküste"
 L["Dustwallow Marsh"] = "Düstermarschen"
 L["Teldrassil"] = "Teldrassil"
 L["Feralas"] = "Feralas"
@@ -92,7 +92,7 @@ L["Theramore"] = "Theramore"
 L["Rut'Theran Village"] = "Rut'Theran"
 L["Sardor Isle"] = "Insel Sardor"
 L["Feathermoon"] = "Mondfederfeste"
-L["Forgotten Coast"] = "Die vergessene K\195\188ste"
+L["Forgotten Coast"] = "Die vergessene Küste"
 
 -- abbreviations
 L["Org"] = "Org"  -- Orgrimmar

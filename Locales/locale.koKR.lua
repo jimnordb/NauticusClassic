@@ -109,5 +109,5 @@ L["MH"]  = "메네실" -- Menethil Harbor
 L["Aub"] = "아우버" -- Auberdine
 L["Th"]  = "테라" -- Theramore
 L["RTV"] = "루테란" -- Rut'Theran Village
-L["FMS"] = "FMS" -- Feathermoon
-L["Fer"] = "Fer" -- Feralas
+L["FMS"] = true -- Feathermoon
+L["Fer"] = true -- Feralas
