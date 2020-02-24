@@ -30,6 +30,7 @@ NauticusClassic.lowestNameTime = "--"
 NauticusClassic.tempText = ""
 NauticusClassic.tempTextCount = 0
 NauticusClassic.debug = false
+NauticusClassic.iconRenderTimer = nil
 
 -- local variables
 local lastcheck_timeout = 30
@@ -52,6 +53,7 @@ local defaults = {
 		alarmOffset = 20,
 		miniIconSize = 1,
 		worldIconSize = 1.25,
+		iconFramerate = 30,
 		showMiniIcons = true,
 		showWorldIcons = true,
 		factionOnlyIcons = false,
@@ -144,6 +146,24 @@ local _options = {
 		isPercent = true,
 		min = .5, max = 2, step = .01,
 	},
+	iconframerate = {
+		type = 'range',
+		name = L["Icon framerate"],
+		desc = L["Change the framerate of the World Map/Mini-Map icons (lower this value if you are seeing performance issues with the map open)."],
+		order = 600,
+		get = function()
+			return NauticusClassic.db.profile.iconFramerate
+		end,
+		set = function(info, val)
+			NauticusClassic.db.profile.iconFramerate = val
+			iconFramerate = val
+			if NauticusClassic.iconRenderTimer then
+				NauticusClassic:CancelTimer(NauticusClassic.iconRenderTimer)
+			end
+			NauticusClassic.iconRenderTimer = NauticusClassic:ScheduleRepeatingTimer("DrawMapIcons", 1.0 / val)
+		end,
+		min = 1, max = 60, step = 1,
+	},
 	factiononly = {
 		type = 'toggle',
 		name = L["Faction only"],
@@ -232,6 +252,7 @@ local options = { type = "group", args = {
 			},
 			iconminisize = _options.iconminisize,
 			iconworldsize = _options.iconworldsize,
+			iconframerate = _options.iconframerate,
 			showminimapicon = _options.showminimapicon,
 			showworldmapicon = _options.showworldmapicon,
 			factiononly = _options.factiononly,
@@ -249,6 +270,7 @@ local optionsSlash = { type = 'group', name = "NauticusClassic", args = {
 			[ L["worldshow"] ] = _options.showworldmapicon,
 			[ L["minisize"] ] = _options.iconminisize,
 			[ L["worldsize"] ] = _options.iconworldsize,
+			[ L["framerate"] ] = _options.iconframerate,
 			[ L["faction"] ] = _options.factiononly,
 		},
 	},
@@ -277,9 +299,9 @@ function NauticusClassic:OnEnable()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterComm(self.DEFAULT_PREFIX)
 
-	self:ScheduleRepeatingTimer("DrawMapIcons", 0.033) -- every 1/30th of a second
+	NauticusClassic.iconRenderTimer = self:ScheduleRepeatingTimer("DrawMapIcons", 1 / iconFramerate)
 	self:ScheduleRepeatingTimer("Clock_OnUpdate", 1) -- every second (clock tick)
-	self:ScheduleRepeatingTimer("CheckTriggers_OnUpdate", 0.8) -- every 4/5th of a second
+	self:ScheduleRepeatingTimer("CheckTriggers_OnUpdate", 1.0) -- every 4/5th of a second
 	--self:ScheduleRepeatingTimer("UpdateChannel", 60)
 
 	-- local frameEvent = CreateFrame('Frame')
@@ -299,13 +321,17 @@ local prevx = 0
 local prevy = 0
 local prevdx = 0
 local prevdy = 0
+local lastNonZeroDxDyTime = 0
 
 function NauticusClassic:OnUpdate()
 	local x, y = HBD:GetPlayerWorldPosition()
-	local ddx = x - prevx
-	local ddy = y - prevy
-	if prevdx == 0 and prevdy == 0 and (ddx > 0 or ddy > 0) then
-		NauticusClassic:DebugMessage(format("MOVED: %.14f", GetTime()))
+	local ddx = abs(x - prevx)
+	local ddy = abs(y - prevy)
+	if prevdx == 0 and prevdy == 0 and (ddx > 0 or ddy > 0) and GetTime() - lastNonZeroDxDyTime > 10 then
+		NauticusClassic:DebugMessage(format("MOVED: %.3f", GetTime()))
+	end
+	if ddx > 0 or ddy > 0 then
+		lastNonZeroDxDyTime = GetTime()
 	end
 	prevdx = ddx
 	prevdy = ddy
@@ -644,6 +670,7 @@ function NauticusClassic:InitialiseConfig()
 	autoSelect = self.db.char.autoSelect
 	showMiniIcons = self.db.profile.showMiniIcons
 	showWorldIcons = self.db.profile.showWorldIcons
+	iconFramerate = self.db.profile.iconFramerate
 	factionOnlyIcons = self.db.profile.factionOnlyIcons
 
 	self.activeTransit = self.db.char.activeTransit
@@ -939,6 +966,7 @@ function NauticusClassic:DebugMessage(msg)
 	if self.debug then
 		local now = GetTime()
 		DEFAULT_CHAT_FRAME:AddMessage(format("[Naut] ["..YELLOW.."%0.3f|r]: %s", now-lastDebug, msg))
+		--ChatFrame3:AddMessage(format("[Naut] ["..YELLOW.."%0.3f|r]: %s", now-lastDebug, msg))
 		lastDebug = now
 	end
 end

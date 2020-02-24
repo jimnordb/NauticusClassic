@@ -7,15 +7,16 @@ if not L then return; end
 L["Tracks the precise arrival & departure schedules of boats and Zeppelins around Azeroth and displays them on the Mini-Map and World Map in real-time."] = "Следит за прибытием и отправлением кораблей и дирижаблей в Азероте и показывает их на миникарте и карте мира."
 
 -- slash commands (no spaces!)
-L["icons"] = "icons"
-L["minishow"] = "minishow"
-L["worldshow"] = "worldshow"
-L["minisize"] = "minisize"
-L["worldsize"] = "worldsize"
-L["faction"] = "faction"
-L["minibutton"] = "minibutton"
-L["autoselect"] = "autoselect"
-L["alarm"] = "alarm"
+L["icons"] = true
+L["minishow"] = true
+L["worldshow"] = true
+L["minisize"] = true
+L["worldsize"] = true
+L["framerate"] = true
+L["faction"] = true
+L["minibutton"] = true
+L["autoselect"] = true
+L["alarm"] = true
 
 -- options
 L["Options"] = "Настройки"
@@ -30,6 +31,8 @@ L["Mini-Map icon size"] = "Размер иконок на миникарте"
 L["Change the size of the Mini-Map icons."] = "Изменение размера иконок на миникарте."
 L["World Map icon size"] = "Размер иконок на карте мира"
 L["Change the size of the World Map icons."] = "Изменение размера иконок на карте мира."
+L["Icon framerate"] = true
+L["Change the framerate of the World Map/Mini-Map icons (lower this value if you are seeing performance issues with the map open)."] = true
 L["Faction only"] = "Своя фракция"
 L["Hide transports of opposite faction from the map, showing only neutral and those of your faction."] = "Скрывает отображение транспорта противоположной фракции с карты и показывает только нейтральный транспорт и твоей фракции."
 L["Auto select transport"] = "Автовыбор транспорта"
