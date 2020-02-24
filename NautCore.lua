@@ -280,8 +280,10 @@ function NauticusClassic:OnEnable()
 	self:ScheduleRepeatingTimer("DrawMapIcons", 0.033) -- every 1/30th of a second
 	self:ScheduleRepeatingTimer("Clock_OnUpdate", 1) -- every second (clock tick)
 	self:ScheduleRepeatingTimer("CheckTriggers_OnUpdate", 0.8) -- every 4/5th of a second
-	self:ScheduleRepeatingTimer("UpdateChannel", 60)
-	--self:ScheduleRepeatingTimer("RunOnEveryFrame", 0.01)
+	--self:ScheduleRepeatingTimer("UpdateChannel", 60)
+
+	-- local frameEvent = CreateFrame('Frame')
+	-- frameEvent:SetScript("OnUpdate", self.OnUpdate)
 
 	--self:RegisterEvent("WORLD_MAP_UPDATE")
 
@@ -293,15 +295,34 @@ function NauticusClassic:OnEnable()
 	self:SetTransport()
 end
 
+local prevx = 0
+local prevy = 0
+local prevdx = 0
+local prevdy = 0
+
+function NauticusClassic:OnUpdate()
+	local x, y = HBD:GetPlayerWorldPosition()
+	local ddx = x - prevx
+	local ddy = y - prevy
+	if prevdx == 0 and prevdy == 0 and (ddx > 0 or ddy > 0) then
+		NauticusClassic:DebugMessage(format("MOVED: %.14f", GetTime()))
+	end
+	prevdx = ddx
+	prevdy = ddy
+	prevx = x
+	prevy = y
+end
+
 local isDrawing
 
 function NauticusClassic:DrawMapIcons(worldOnly)
 	if isDrawing then return; end; isDrawing = true
 
-	local liveData, cycle, index, offsets, x, y, zone, xzone, yzone, angle, transit_data, fraction,
+	local liveData, cycle, index, offsets, x, y, wzone, xw, yw, xm, ym, angle, transit_data, fraction,
 		isZoning, isZoneInteresting, isFactionInteresting, buttonMini, buttonWorld
 
 	local WorldMapVisible = WorldMapFrame:IsVisible()
+	local px, py, instanceID = HBD:GetPlayerWorldPosition()
 
 	for id, transport in pairs(transports) do
 		if self:HasKnownCycle(id) then
@@ -344,21 +365,22 @@ function NauticusClassic:DrawMapIcons(worldOnly)
 					end
 
 					if x < 0.5 then
-						xzone, yzone = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 1)
-						zone = 1
+						xw, yw = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 1)
+						wzone = 1
 					else
-						xzone, yzone = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 0)
-						zone = 0
+						xw, yw = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 0)
+						wzone = 0
 					end
+					xm, ym = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, instanceID)
 
-					if xzone and yzone then
+					if xw and yw and xm and ym then
 						if WorldMapVisible and showWorldIcons and isFactionInteresting then
 							if isZoning ~= transport.status then
 								buttonWorld.texture:SetTexture(isZoning and ARTWORK_ZONING or transport.texture_name)
 								transport.status = isZoning
 							end
 							Pins:RemoveWorldMapIcon(self, buttonWorld)
-							Pins:AddWorldMapIconWorld(self, buttonWorld, zone, xzone, yzone, HBD_PINS_WORLDMAP_SHOW_WORLD)
+							Pins:AddWorldMapIconWorld(self, buttonWorld, wzone, xw, yw, HBD_PINS_WORLDMAP_SHOW_WORLD)
 							buttonWorld.texture:SetRotation(angle)
 						elseif buttonWorld:IsVisible() then
 							Pins:RemoveWorldMapIcon(self, buttonWorld)
@@ -367,7 +389,7 @@ function NauticusClassic:DrawMapIcons(worldOnly)
 						if isZoneInteresting and showMiniIcons and isFactionInteresting then
 							if not worldOnly then
 								Pins:RemoveMinimapIcon(self, buttonMini)
-								Pins:AddMinimapIconWorld(self, buttonMini, zone, xzone, yzone, true)
+								Pins:AddMinimapIconWorld(self, buttonMini, instanceID, xm, ym, true)
 
 								buttonMini.texture:SetRotation(angle - (GetCVar("rotateMinimap") == "1" and GetPlayerFacing() or 0))
 								buttonMini:SetAlpha(Pins:IsMinimapIconOnEdge(buttonMini) and 0.6 or 0.9)
@@ -452,24 +474,6 @@ local x, y, ax, ay, dax, day, tx, ty, instanceID, dist, post, last_trig, keep_ti
 local old_x, old_y, old_ax, old_ay -- old player coords
 local prev_time = 0
 local prev_rot = 0
-
-local prevx = 0
-local prevy = 0
-local prevdx = 0
-local prevdy = 0
-
-function NauticusClassic:RunOnEveryFrame()
-	local x, y, instanceID = HBD:GetPlayerWorldPosition()
-	local ddx = x - prevx
-	local ddy = y - prevy
-	if prevdx == 0 and prevdy == 0 and (ddx > 0 or ddy > 0) then
-		self:DebugMessage(format("MOVED: %.14f", GetTime()))
-	end
-	prevdx = ddx
-	prevdy = ddy
-	prevx = x
-	prevy = y
-end
 
 function NauticusClassic:CheckTriggers_OnUpdate()
 	-- remember if we've already triggered a set of coords within the last 30 secs
