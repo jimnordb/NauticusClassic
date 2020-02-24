@@ -301,7 +301,7 @@ function NauticusClassic:OnEnable()
 
 	NauticusClassic.iconRenderTimer = self:ScheduleRepeatingTimer("DrawMapIcons", 1 / iconFramerate)
 	self:ScheduleRepeatingTimer("Clock_OnUpdate", 1) -- every second (clock tick)
-	self:ScheduleRepeatingTimer("CheckTriggers_OnUpdate", 1.0) -- every 4/5th of a second
+	self:ScheduleRepeatingTimer("CheckTriggers_OnUpdate", 0.8) -- every 4/5th of a second
 	--self:ScheduleRepeatingTimer("UpdateChannel", 60)
 
 	-- local frameEvent = CreateFrame('Frame')
