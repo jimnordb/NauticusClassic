@@ -25,7 +25,7 @@ local ldbicon = LibStub("LibDBIcon-1.0")
 
 -- object variables
 NauticusClassic.DEFAULT_PREFIX = "NauticSync" -- do not change!
-NauticusClassic.versionNum = 101 -- for comparison
+NauticusClassic.versionNum = 102 -- for comparison
 NauticusClassic.lowestNameTime = "--"
 NauticusClassic.tempText = ""
 NauticusClassic.tempTextCount = 0
@@ -638,7 +638,7 @@ function NauticusClassic:InitialiseConfig()
 	do
 		local version
 		--@non-debug@
-		version = "1.0.0"
+		version = "1.0.2"
 		--@end-non-debug@
 		local title = "NauticusClassic"
 		if version then
