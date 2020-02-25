@@ -14,19 +14,19 @@ local NauticusClassic = NauticusClassic
 local L = LibStub("AceLocale-3.0"):GetLocale("NauticusClassic")
 
 local requests = {
-	[""] = nil,
+	["ALL"] = nil,
 	["RAID"] = nil,
 	["GUILD"] = nil,
 	["YELL"] = nil
 }
 local requestLists = {
-	[""] = {},
+	["ALL"] = {},
 	["RAID"] = {},
 	["GUILD"] = {},
 	["YELL"] = {}
 }
 local requestVersions = {
-	[""] = false,
+	["ALL"] = false,
 	["RAID"] = false,
 	["GUILD"] = false,
 	["YELL"] = false
@@ -191,14 +191,8 @@ end
 
 function NauticusClassic:SendMessage(msg, distribution)
 	if not self.comm_disable then
-		if distribution == "" then
-			self:DebugMessage("sending msg to all ; length: "..strlen(msg))
-		else
-			self:DebugMessage("sending msg dist: "..distribution.." ; length: "..strlen(msg))
-		end
-		if distribution ~= "" then
-			self:SendCommMessage(self.DEFAULT_PREFIX, msg, distribution)
-		else
+		self:DebugMessage("sending msg dist: "..distribution.." ; length: "..strlen(msg))
+		if distribution == "ALL" then
 			if IsInGroup() then
 				self:SendCommMessage(self.DEFAULT_PREFIX, msg, "RAID")
 			end
@@ -206,6 +200,8 @@ function NauticusClassic:SendMessage(msg, distribution)
 				self:SendCommMessage(self.DEFAULT_PREFIX, msg, "GUILD")
 			end
 			self:SendCommMessage(self.DEFAULT_PREFIX, msg, "YELL")
+		else
+			self:SendCommMessage(self.DEFAULT_PREFIX, msg, distribution)
 		end
 	end
 end
@@ -223,6 +219,9 @@ end
 
 function NauticusClassic:OnCommReceived(prefix, msg, distribution, sender)
 	if sender ~= UnitName("player") and strlower(prefix) == strlower(self.DEFAULT_PREFIX) then
+		if distribution == "PARTY" then
+			distribution = "RAID"
+		end
 		self:DebugMessage("received sender: "..sender.." ; dist: "..distribution.." ; length: "..strlen(msg))
 		if 254 <= strlen(msg) then return; end -- message too big, probably corrupted
 
@@ -429,9 +428,9 @@ function NauticusClassic:UpdateChannel(wait)
 	--@end-debug@]===]
 
 	for id in pairs(self.transports) do
-		requestLists[""][id] = true
+		requestLists["ALL"][id] = true
 	end
 
-	requestVersions[""] = true
-	self:DoRequest(5 + math.random() * 15, "")
+	requestVersions["ALL"] = true
+	self:DoRequest(5 + math.random() * 15, "ALL")
 end
