@@ -27,7 +27,7 @@ end
 function NauticusClassic:DoRequest(wait, distribution)
 	self:CancelRequest()
 
-	if wait then
+	if wait and wait > 0 then
 		request = self:ScheduleTimer("DoRequest", wait, 0, distribution)
 		return
 	end
