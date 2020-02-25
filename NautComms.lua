@@ -24,19 +24,19 @@ function NauticusClassic:CancelRequest()
 	end
 end
 
-function NauticusClassic:DoRequest(wait)
+function NauticusClassic:DoRequest(wait, distribution)
 	self:CancelRequest()
 
 	if wait then
-		request = self:ScheduleTimer("DoRequest", wait)
+		request = self:ScheduleTimer("DoRequest", wait, 0, distribution)
 		return
 	end
 
 	if next(requestList) then
-		self:BroadcastTransportData()
+		self:BroadcastTransportData(distribution)
 
 		if requestVersion or next(requestList) then
-			self:DoRequest(2.5)
+			self:DoRequest(2.5, distribution)
 			return
 		end
 	end
@@ -45,7 +45,7 @@ function NauticusClassic:DoRequest(wait)
 		requestVersion = false
 		local version = self.versionNum
 		if self.version then version = version.." "..self.version; end
-		self:SendMessage(CMD_VERSION.." "..version)
+		self:SendMessage(CMD_VERSION.." "..version, distribution)
 	end
 end
 
@@ -119,7 +119,7 @@ local function StringHash(text)
 	return counter % 4294967291
 end
 
-function NauticusClassic:BroadcastTransportData()
+function NauticusClassic:BroadcastTransportData(distribution)
 	local since, boots, swaps
 	local lag = GetLag()
 	local trans_str = ""
@@ -151,7 +151,7 @@ function NauticusClassic:BroadcastTransportData()
 
 	if trans_str ~= "" then
 		trans_str = strsub(trans_str, 1, -2) -- remove the last comma
-		self:SendMessage(CMD_KNOWN.." "..crunch(DATA_VERSION).." "..trans_str.." "..crunch(StringHash(trans_str)))
+		self:SendMessage(CMD_KNOWN.." "..crunch(DATA_VERSION).." "..trans_str.." "..crunch(StringHash(trans_str)), distribution)
 		self:DebugMessage("tell our transports ; length: "..strlen(trans_str))
 	else
 		self:DebugMessage("nothing to tell")
@@ -174,13 +174,19 @@ function NauticusClassic:RequestTransport(t)
 	requestList[t] = true
 end
 
-function NauticusClassic:SendMessage(msg)
+function NauticusClassic:SendMessage(msg, distribution)
 	if not self.comm_disable then
-		self:SendCommMessage(self.DEFAULT_PREFIX, msg, "RAID")
-		if IsInGuild() then
-			self:SendCommMessage(self.DEFAULT_PREFIX, msg, "GUILD")
+		if distribution then
+			self:SendCommMessage(self.DEFAULT_PREFIX, msg, distribution)
+		else
+			if IsInGroup() then
+				self:SendCommMessage(self.DEFAULT_PREFIX, msg, "RAID")
+			end
+			if IsInGuild() then
+				self:SendCommMessage(self.DEFAULT_PREFIX, msg, "GUILD")
+			end
+			self:SendCommMessage(self.DEFAULT_PREFIX, msg, "YELL")
 		end
-		self:SendCommMessage(self.DEFAULT_PREFIX, msg, "YELL")
 	end
 end
 
@@ -203,14 +209,14 @@ function NauticusClassic:OnCommReceived(prefix, msg, distribution, sender)
 		local args = GetArgs(msg, " ")
 
 		if args[1] == CMD_VERSION then -- version, num
-			self:ReceiveMessage_version(tonumber(args[2]), sender)
+			self:ReceiveMessage_version(tonumber(args[2]), distribution, sender)
 		elseif args[1] == CMD_KNOWN then -- known, { transports }
-			self:ReceiveMessage_known(tonumber(args[2]), args[3], args[4], sender)
+			self:ReceiveMessage_known(tonumber(args[2]), args[3], args[4], distribution, sender)
 		end
 	end
 end
 
-function NauticusClassic:ReceiveMessage_version(clientversion, sender)
+function NauticusClassic:ReceiveMessage_version(clientversion, distribution, sender)
 	self:DebugMessage(sender.." says: version "..clientversion)
 
 	if clientversion > self.versionNum then
@@ -222,7 +228,7 @@ function NauticusClassic:ReceiveMessage_version(clientversion, sender)
 		end
 	elseif clientversion < self.versionNum then
 		requestVersion = true
-		self:DoRequest(5 + math.random() * 15)
+		self:DoRequest(5 + math.random() * 15, distribution)
 		return
 	end
 
@@ -235,7 +241,7 @@ function NauticusClassic:ReceiveMessage_version(clientversion, sender)
 	end
 end
 
-function NauticusClassic:ReceiveMessage_known(version, transports, hash, sender)
+function NauticusClassic:ReceiveMessage_known(version, transports, hash, distribution, sender)
 	if version ~= DATA_VERSION then return; end
 
 	local lag = GetLag()
@@ -296,7 +302,7 @@ function NauticusClassic:ReceiveMessage_known(version, transports, hash, sender)
 
 	-- if we don't need to send back any data, cancel our scheduler immediately
 	if next(requestList) then
-		self:DoRequest(5 + math.random() * 15)
+		self:DoRequest(5 + math.random() * 15, distribution)
 	elseif not requestVersion then
 		self:DebugMessage("received: known; no more to send")
 		self:CancelRequest()
