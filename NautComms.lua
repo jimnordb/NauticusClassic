@@ -13,36 +13,51 @@ local CMD_KNOWN = "KWN4"
 local NauticusClassic = NauticusClassic
 local L = LibStub("AceLocale-3.0"):GetLocale("NauticusClassic")
 
-local request
-local requestList = {}
-local requestVersion = false
+local requests = {
+	[""] = nil,
+	["RAID"] = nil,
+	["GUILD"] = nil,
+	["YELL"] = nil
+}
+local requestLists = {
+	[""] = {},
+	["RAID"] = {},
+	["GUILD"] = {},
+	["YELL"] = {}
+}
+local requestVersions = {
+	[""] = false,
+	["RAID"] = false,
+	["GUILD"] = false,
+	["YELL"] = false
+}
 
-function NauticusClassic:CancelRequest()
-	if request then
-		self:CancelTimer(request, true)
-		request = nil
+function NauticusClassic:CancelRequest(distribution)
+	if requests[distribution] then
+		self:CancelTimer(requests[distribution], true)
+		requests[distribution] = nil
 	end
 end
 
 function NauticusClassic:DoRequest(wait, distribution)
-	self:CancelRequest()
+	self:CancelRequest(distribution)
 
 	if wait and wait > 0 then
-		request = self:ScheduleTimer("DoRequest", wait, 0, distribution)
+		requests[distribution] = self:ScheduleTimer("DoRequest", wait, 0, distribution)
 		return
 	end
 
-	if next(requestList) then
+	if next(requestLists[distribution]) then
 		self:BroadcastTransportData(distribution)
 
-		if requestVersion or next(requestList) then
+		if requestVersions[distribution] or next(requestLists[distribution]) then
 			self:DoRequest(2.5, distribution)
 			return
 		end
 	end
 
-	if requestVersion then
-		requestVersion = false
+	if requestVersions[distribution] then
+		requestVersions[distribution] = false
 		local version = self.versionNum
 		if self.version then version = version.." "..self.version; end
 		self:SendMessage(CMD_VERSION.." "..version, distribution)
@@ -124,7 +139,7 @@ function NauticusClassic:BroadcastTransportData(distribution)
 	local lag = GetLag()
 	local trans_str = ""
 
-	for transit in pairs(requestList) do
+	for transit in pairs(requestLists[distribution]) do
 		since, boots, swaps = self:GetKnownCycle(transit)
 		trans_str = trans_str..crunch(transit)
 
@@ -145,7 +160,7 @@ function NauticusClassic:BroadcastTransportData(distribution)
 		end
 
 		trans_str = trans_str..","
-		requestList[transit] = nil
+		requestLists[distribution][transit] = nil
 		if 229 < strlen(trans_str) then break; end
 	end
 
@@ -170,13 +185,18 @@ function NauticusClassic:RequestAllTransports()
 end
 --@end-debug@]===]
 
-function NauticusClassic:RequestTransport(t)
-	requestList[t] = true
+function NauticusClassic:RequestTransport(t, distribution)
+	requestLists[distribution][t] = true
 end
 
 function NauticusClassic:SendMessage(msg, distribution)
 	if not self.comm_disable then
-		if distribution then
+		if distribution == "" then
+			self:DebugMessage("sending msg to all ; length: "..strlen(msg))
+		else
+			self:DebugMessage("sending msg dist: "..distribution.." ; length: "..strlen(msg))
+		end
+		if distribution ~= "" then
 			self:SendCommMessage(self.DEFAULT_PREFIX, msg, distribution)
 		else
 			if IsInGroup() then
@@ -203,7 +223,7 @@ end
 
 function NauticusClassic:OnCommReceived(prefix, msg, distribution, sender)
 	if sender ~= UnitName("player") and strlower(prefix) == strlower(self.DEFAULT_PREFIX) then
-		self:DebugMessage("sender: "..sender.." ; length: "..strlen(msg))
+		self:DebugMessage("received sender: "..sender.." ; dist: "..distribution.." ; length: "..strlen(msg))
 		if 254 <= strlen(msg) then return; end -- message too big, probably corrupted
 
 		local args = GetArgs(msg, " ")
@@ -227,17 +247,17 @@ function NauticusClassic:ReceiveMessage_version(clientversion, distribution, sen
 			self.db.global.newerVersion = clientversion
 		end
 	elseif clientversion < self.versionNum then
-		requestVersion = true
+		requestVersions[distribution] = true
 		self:DoRequest(5 + math.random() * 15, distribution)
 		return
 	end
 
-	requestVersion = false
+	requestVersions[distribution] = false
 
 	-- if we don't need to send back any data, cancel our scheduler immediately
-	if not next(requestList) then
+	if not next(requestLists[distribution]) then
 		self:DebugMessage("received: version; no more to send")
-		self:CancelRequest()
+		self:CancelRequest(distribution)
 	end
 end
 
@@ -296,16 +316,16 @@ function NauticusClassic:ReceiveMessage_known(version, transports, hash, distrib
 			if set then
 				self:SetKnownCycle(transit, since, boots, swaps)
 			end
-			requestList[transit] = respond
+			requestLists[distribution][transit] = respond
 		end
 	end
 
 	-- if we don't need to send back any data, cancel our scheduler immediately
-	if next(requestList) then
+	if next(requestLists[distribution]) then
 		self:DoRequest(5 + math.random() * 15, distribution)
-	elseif not requestVersion then
+	elseif not requestVersions[distribution] then
 		self:DebugMessage("received: known; no more to send")
-		self:CancelRequest()
+		self:CancelRequest(distribution)
 	end
 end
 
@@ -409,9 +429,9 @@ function NauticusClassic:UpdateChannel(wait)
 	--@end-debug@]===]
 
 	for id in pairs(self.transports) do
-		requestList[id] = true
+		requestLists[""][id] = true
 	end
 
-	requestVersion = true
-	self:DoRequest(5 + math.random() * 15)
+	requestVersions[""] = true
+	self:DoRequest(5 + math.random() * 15, "")
 end

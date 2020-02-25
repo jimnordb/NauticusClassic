@@ -548,8 +548,8 @@ function NauticusClassic:CheckTriggers_OnUpdate()
 					if post then
 						if last_trig and keep_time then
 							self:SetKnownCycle(transit, GetTime() - last_trig + keep_time, 0, 0)
-							self:RequestTransport(transit)
-							self:DoRequest(10 + math.random() * 10)
+							self:RequestTransport(transit, "")
+							self:DoRequest(10 + math.random() * 10, "")
 							keep_time = nil
 							last_trig = GetTime()
 						end
@@ -618,8 +618,8 @@ function NauticusClassic:SetKnownTime(instanceID, transit, index, x, y, set)
 
 	if set then
 		self:SetKnownCycle(transit, sum_time, 0, 0)
-		self:RequestTransport(transit)
-		self:DoRequest(10 + math.random() * 10)
+		self:RequestTransport(transit, "")
+		self:DoRequest(10 + math.random() * 10, "")
 	else
 		keep_time = sum_time
 	end
