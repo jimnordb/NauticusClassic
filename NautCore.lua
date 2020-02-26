@@ -25,7 +25,7 @@ local ldbicon = LibStub("LibDBIcon-1.0")
 
 -- object variables
 NauticusClassic.DEFAULT_PREFIX = "NauticSync" -- do not change!
-NauticusClassic.versionNum = 104 -- for comparison
+NauticusClassic.versionNum = 105 -- for comparison
 NauticusClassic.lowestNameTime = "--"
 NauticusClassic.tempText = ""
 NauticusClassic.tempTextCount = 0
@@ -86,6 +86,7 @@ local _options = {
 			if not val then
 				for _, t in pairs(transports) do
 					Pins:RemoveMinimapIcon(self, t.minimap_icon)
+					t.minimap_icon:Hide()
 				end
 			end
 		end,
@@ -104,6 +105,7 @@ local _options = {
 			if not val then
 				for _, t in pairs(transports) do
 					Pins:RemoveWorldMapIcon(self, t.worldmap_icon)
+					t.worldmap_icon:Hide()
 				end
 			end
 		end,
@@ -408,24 +410,28 @@ function NauticusClassic:DrawMapIcons(worldOnly)
 							Pins:RemoveWorldMapIcon(self, buttonWorld)
 							Pins:AddWorldMapIconWorld(self, buttonWorld, wzone, xw, yw, HBD_PINS_WORLDMAP_SHOW_WORLD)
 							buttonWorld.texture:SetRotation(angle)
+							buttonWorld:Show()
 						elseif buttonWorld:IsVisible() then
 							Pins:RemoveWorldMapIcon(self, buttonWorld)
+							buttonWorld:Hide()
 						end
 
 						if isZoneInteresting and showMiniIcons and isFactionInteresting then
 							if not worldOnly then
 								Pins:RemoveMinimapIcon(self, buttonMini)
 								Pins:AddMinimapIconWorld(self, buttonMini, instanceID, xm, ym, true)
-
 								buttonMini.texture:SetRotation(angle - (GetCVar("rotateMinimap") == "1" and GetPlayerFacing() or 0))
 								buttonMini:SetAlpha(Pins:IsMinimapIconOnEdge(buttonMini) and 0.6 or 0.9)
+								buttonMini:Show()
 							end
 						elseif buttonMini:IsVisible() then
 							Pins:RemoveMinimapIcon(self, buttonMini)
+							buttonMini:Hide()
 						end
 					end
 				elseif buttonMini:IsVisible() then
 					Pins:RemoveMinimapIcon(self, buttonMini)
+					buttonMini:Hide()
 				end
 			end
 		end
@@ -638,7 +644,7 @@ function NauticusClassic:InitialiseConfig()
 	do
 		local version
 		--@non-debug@
-		version = "1.0.4"
+		version = "1.0.5"
 		--@end-non-debug@
 		local title = "NauticusClassic"
 		if version then
@@ -785,6 +791,7 @@ function NauticusClassic:InitialiseConfig()
 		frame:SetScript("OnEnter", function(self) NauticusClassic:MapIcon_OnEnter(self) end)
 		frame:SetScript("OnLeave", function(self) NauticusClassic:MapIcon_OnLeave(self) end)
 		frame:SetID(id)
+		frame:Hide()
 
 		frame = CreateFrame("Button", "NauticusClassicWorldIcon")
 		data.worldmap_icon = frame
@@ -797,6 +804,7 @@ function NauticusClassic:InitialiseConfig()
 		frame:SetScript("OnEnter", function(self) NauticusClassic:MapIcon_OnEnter(self) end)
 		frame:SetScript("OnLeave", function(self) NauticusClassic:MapIcon_OnLeave(self) end)
 		frame:SetID(id)
+		frame:Hide()
 	end
 
 	self.packedData = nil -- free some memory (too many indexes to recycle)
