@@ -429,9 +429,15 @@ function NauticusClassic:DrawMapIcons(worldOnly)
 							buttonMini:Hide()
 						end
 					end
-				elseif buttonMini:IsVisible() then
-					Pins:RemoveMinimapIcon(self, buttonMini)
-					buttonMini:Hide()
+				else
+					if buttonMini:IsVisible() then
+						Pins:RemoveMinimapIcon(self, buttonMini)
+						buttonMini:Hide()
+					end
+					if buttonWorld:IsVisible() then
+						Pins:RemoveWorldMapIcon(self, buttonWorld)
+						buttonWorld:Hide()
+					end
 				end
 			end
 		end
@@ -644,7 +650,7 @@ function NauticusClassic:InitialiseConfig()
 	do
 		local version
 		--@non-debug@
-		version = "1.0.5"
+		version = "1.0.6"
 		--@end-non-debug@
 		local title = "NauticusClassic"
 		if version then

@@ -1,7 +1,7 @@
 ﻿## Interface: 11303
 ## Title: NauticusClassic
 ## Author: DungFu
-## Version: 1.0.5
+## Version: 1.0.6
 ## Notes: Tracks the precise arrival & departure schedules of boats and Zeppelins around Azeroth and displays them on the Mini-Map and World Map in real-time
 ## Notes-deDE: Verfolgt die genaue Position sowie Ankunfts- und Abfahrtszeiten von Booten und Zeppelinen in Azeroth an und zeigt sie auf der Minikarte und der Weltkarte in Echtzeit an
 ## Notes-frFR: Permet de suivre les arrivées et départs des bateaux et zeppelins sur Azeroth et de les afficher en temps réel sur la carte du monde et la minicarte
