@@ -25,7 +25,7 @@ local ldbicon = LibStub("LibDBIcon-1.0")
 
 -- object variables
 NauticusClassic.DEFAULT_PREFIX = "NauticSync" -- do not change!
-NauticusClassic.versionNum = 105 -- for comparison
+NauticusClassic.versionNum = 106 -- for comparison
 NauticusClassic.lowestNameTime = "--"
 NauticusClassic.tempText = ""
 NauticusClassic.tempTextCount = 0
