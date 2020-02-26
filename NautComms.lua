@@ -166,7 +166,7 @@ function NauticusClassic:BroadcastTransportData(distribution)
 
 	if trans_str ~= "" then
 		trans_str = strsub(trans_str, 1, -2) -- remove the last comma
-		self:SendMessage(CMD_KNOWN.." "..crunch(DATA_VERSION).." "..trans_str.." "..crunch(StringHash(trans_str)), distribution)
+		self:SendMessage(CMD_KNOWN.." "..DATA_VERSION.." "..trans_str.." "..crunch(StringHash(trans_str)), distribution)
 		self:DebugMessage("tell our transports ; length: "..strlen(trans_str))
 	else
 		self:DebugMessage("nothing to tell")
@@ -218,7 +218,8 @@ local function GetArgs(message, separator)
 end
 
 function NauticusClassic:OnCommReceived(prefix, msg, distribution, sender)
-	if sender ~= UnitName("player") and strlower(prefix) == strlower(self.DEFAULT_PREFIX) then
+	if sender ~= UnitName("player") and strlower(prefix) == strlower(self.DEFAULT_PREFIX) and
+		(distribution == "PARTY" or distribution == "RAID" or distribution == "GUILD" or distribution == "YELL") then
 		if distribution == "PARTY" then
 			distribution = "RAID"
 		end
