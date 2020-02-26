@@ -5,7 +5,7 @@ local L = AceLocale:NewLocale("NauticusClassic", "esES") or AceLocale:NewLocale(
 if not L then return; end
 
 -- addon description
-L["Tracks the precise arrival & departure schedules of boats and Zeppelins around Azeroth and displays them on the Mini-Map and World Map in real-time."] = "Sigue con precisión los horarios de llegada y salida de barcos y zepelines en todo Azeroth y los muestra en el Mini-Mapa y Mapa del Mundo en tiempo real."
+L["Tracks the precise arrival & departure schedules of boats and Zeppelins around Azeroth and displays them on the Mini-Map and World Map in real-time."] = "Sigue con precisión los horarios de llegada y salida de barcos y zepelines en todo Azeroth y los muestra en el Minimapa y Mapa del Mundo en tiempo real."
 
 -- slash commands (no spaces!)
 L["icons"] = true
@@ -23,25 +23,25 @@ L["alarm"] = true
 L["Options"] = "Opciones"
 L["General Settings"] = "Opciones Generales"
 L["Map Icons"] = "Iconos del mapa"
-L["Options for displaying transports as icons on the Mini-Map and World Map."] = "Opciones de visualización de iconos de transporte en el Mini-Mapa y el Mapa del Mundo."
-L["Show on Mini-Map"] = "Mostrar en Mini-Mapa"
-L["Toggle display of icons on the Mini-Map."] = "Activar/Desactivar los iconos en el Mini-Mapa."
+L["Options for displaying transports as icons on the Mini-Map and World Map."] = "Opciones de visualización de iconos de transporte en el Minimapa y el Mapa del Mundo."
+L["Show on Mini-Map"] = "Mostrar en minimapa"
+L["Toggle display of icons on the Mini-Map."] = "Activar/Desactivar los iconos en el minimapa."
 L["Show on World Map"] = "Mostrar en Mapa del Mundo"
 L["Toggle display of icons on the World Map."] = "Activar/Desactivar los iconos en el Mapa del Mundo"
-L["Mini-Map icon size"] = "Tamaño del icono del mini-mapa"
-L["Change the size of the Mini-Map icons."] = "Cambia el tamaño de los iconos del mini-mapa."
+L["Mini-Map icon size"] = "Tamaño del icono del minimapa"
+L["Change the size of the Mini-Map icons."] = "Cambia el tamaño de los iconos del minimapa."
 L["World Map icon size"] = "Tamaño de icono del Mapa del Mundo"
 L["Change the size of the World Map icons."] = "Cambia el tamaño de los iconos del mapa del mundo."
-L["Icon framerate"] = true
-L["Change the framerate of the World Map/Mini-Map icons (lower this value if you are seeing performance issues with the map open)."] = true
+L["Icon framerate"] = "FPS del icono"
+L["Change the framerate of the World Map/Mini-Map icons (lower this value if you are seeing performance issues with the map open)."] = "Cambie la velocidad de fotogramas de los iconos del Mapa del Mundo/Minimapa (reduzca este valor si observa problemas de rendimiento con el mapa abierto)."
 L["Faction only"] = "Solo facción"
 L["Hide transports of opposite faction from the map, showing only neutral and those of your faction."] = "Ocultar transportes de la facción contraria en el mapa, mostrar solo neutrales y los de tu facción."
 L["Auto select transport"] = "Auto seleccionar transporte"
 L["Automatically select nearest transport when standing at platform."] = "Seleccionar automáticamente el transporte más cercano cuando estés en una plataforma de embarque."
 L["Alarm delay"] = "Retardo de alarma"
 L["Change the alarm delay (in seconds)."] = "Cambia el retardo de la alarma (en segundos)."
-L["Mini-Map button"] = "Botón del mini-mapa"
-L["Toggle the Mini-Map button."] = "Activar/Desactivar el botón del Mini-Mapa."
+L["Mini-Map button"] = "Botón del minimapa"
+L["Toggle the Mini-Map button."] = "Activar/Desactivar el botón del minimapa."
 
 -- miscellaneous
 L["Arrival"] = "Llegada"
@@ -94,9 +94,9 @@ L["Menethil Harbor"] = "Refugio de Marshal"
 L["Auberdine"] = "Auberdine"
 L["Theramore"] = "Theramore"
 L["Rut'Theran Village"] = "Aldea Rut'Theran"
-L["Sardor Isle"] = "Sardor Isle"
-L["Feathermoon"] = "Feathermoon"
-L["Forgotten Coast"] = "Forgotten Coast"
+L["Sardor Isle"] = "Isla de Sardor"
+L["Feathermoon"] = "Plumaluna"
+L["Forgotten Coast"] = "La Costa Olvidada"
 
 -- abbreviations
 L["Org"] = true -- Orgrimmar
