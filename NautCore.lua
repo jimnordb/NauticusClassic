@@ -25,7 +25,7 @@ local ldbicon = LibStub("LibDBIcon-1.0")
 
 -- object variables
 NauticusClassic.DEFAULT_PREFIX = "NauticSync" -- do not change!
-NauticusClassic.versionNum = 103 -- for comparison
+NauticusClassic.versionNum = 104 -- for comparison
 NauticusClassic.lowestNameTime = "--"
 NauticusClassic.tempText = ""
 NauticusClassic.tempTextCount = 0
@@ -63,7 +63,7 @@ local defaults = {
 	},
 	global = {
 		knownCycles = {},
-		debug = false,
+		debug = true,
 	},
 	char = {
 		activeTransit = NONE,
@@ -304,8 +304,8 @@ function NauticusClassic:OnEnable()
 	self:ScheduleRepeatingTimer("CheckTriggers_OnUpdate", 0.8) -- every 4/5th of a second
 	--self:ScheduleRepeatingTimer("UpdateChannel", 60)
 
-	-- local frameEvent = CreateFrame('Frame')
-	-- frameEvent:SetScript("OnUpdate", self.OnUpdate)
+	local frameEvent = CreateFrame('Frame')
+	frameEvent:SetScript("OnUpdate", self.OnUpdate)
 
 	--self:RegisterEvent("WORLD_MAP_UPDATE")
 
@@ -638,7 +638,7 @@ function NauticusClassic:InitialiseConfig()
 	do
 		local version
 		--@non-debug@
-		version = "1.0.3"
+		version = "1.0.4"
 		--@end-non-debug@
 		local title = "NauticusClassic"
 		if version then

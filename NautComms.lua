@@ -6,12 +6,13 @@ local YELLOW  = "|cffffff00"
 local WHITE   = "|cffffffff"
 local GREY    = "|cffbababa"
 
-local DATA_VERSION = 1 -- route calibration versioning
+local DATA_VERSION = 2 -- route calibration versioning
 local CMD_VERSION = "VER"
 local CMD_KNOWN = "KWN4"
 
 local NauticusClassic = NauticusClassic
 local L = LibStub("AceLocale-3.0"):GetLocale("NauticusClassic")
+local LibDeflate = LibStub:GetLibrary("LibDeflate")
 
 local requests = {
 	["ALL"] = nil,
@@ -60,65 +61,13 @@ function NauticusClassic:DoRequest(wait, distribution)
 		requestVersions[distribution] = false
 		local version = self.versionNum
 		if self.version then version = version.." "..self.version; end
-		self:SendMessage(CMD_VERSION.." "..version, distribution)
+		self:SendMessage(LibDeflate:EncodeForWoWAddonChannel(LibDeflate:CompressDeflate(CMD_VERSION.." "..version)), distribution)
 	end
 end
 
 local function GetLag()
 	local _,_,lag = GetNetStats()
 	return lag / 1000.0
-end
-
-local crunch, uncrunch
-
-do
-	local map = -- excludes: space, comma, colon, s, S, %, tab (\009) ; invalid: nul (\000), line feed (\010), bar (\124), >\127
-		"0123456789ABCDEFGHIJKLMNOPQRTUVWXYZabcdefghijklmnopqrtuvwxyz!\"#$&'()*+-./;<=>?@[\\]^_`{}~"..
-		"\001\002\003\004\005\006\007\008\011\012"..
-		"\014\015\016\017\018\019\020\021\022\023\024\025\026\027\028\029\030\031\127"
-
-	local _base = strlen(map)
-	local digits = {}
-
-	function crunch(num)
-		--if true then return num; end
-		if 0 > num then error("negative number"); end -- shouldn't happen, but just in case
-		local s = ""
-		local remain
-		repeat
-			remain = num % _base -- faster than fmod
-			s = s..digits[remain]
-			num = (num-remain) / _base -- faster than floor
-		until 0 == num
-		return s
-	end
-
-	local chrmap = {}
-
-	function uncrunch(s)
-		--if true then return tonumber(s); end
-		local num = 0
-		local base = 1
-		local c
-		for i = 1, strlen(s) do
-			c = chrmap[strbyte(s, i)]
-			if not c then
-				NauticusClassic:DebugMessage("FECK: "..s.." ; i: "..i.." ; strbyte: "..strbyte(s, i))
-				return
-			end
-			num = num + c * base
-			base = base * _base -- faster than power (^)
-		end
-		return num
-	end
-
-	local c
-
-	for i = 1, _base do
-	   c = strbyte(map, i)
-	   chrmap[c] = i-1
-	   digits[i-1] = strchar(c)
-	end
 end
 
 -- by Mikk; from http://www.wowwiki.com/StringHash
@@ -141,13 +90,13 @@ function NauticusClassic:BroadcastTransportData(distribution)
 
 	for transit in pairs(requestLists[distribution]) do
 		since, boots, swaps = self:GetKnownCycle(transit)
-		trans_str = trans_str..crunch(transit)
+		trans_str = trans_str..transit
 
 		if since ~= nil then
-			trans_str = trans_str..":"..crunch(math.floor((since+lag)*1000.0+.5))
+			trans_str = trans_str..":"..math.floor((since+lag)*1000.0+.5)
 
 			if swaps ~= 1 then
-				trans_str = trans_str..":"..crunch(swaps)
+				trans_str = trans_str..":"..swaps
 			end
 
 			if boots ~= 0 then
@@ -155,7 +104,7 @@ function NauticusClassic:BroadcastTransportData(distribution)
 					trans_str = trans_str..":"
 				end
 
-				trans_str = trans_str..":"..crunch(boots)
+				trans_str = trans_str..":"..boots
 			end
 		end
 
@@ -166,8 +115,10 @@ function NauticusClassic:BroadcastTransportData(distribution)
 
 	if trans_str ~= "" then
 		trans_str = strsub(trans_str, 1, -2) -- remove the last comma
-		self:SendMessage(CMD_KNOWN.." "..crunch(DATA_VERSION).." "..trans_str.." "..crunch(StringHash(trans_str)), distribution)
-		self:DebugMessage("tell our transports ; length: "..strlen(trans_str))
+		local totalMsgString = CMD_KNOWN.." "..DATA_VERSION.." "..trans_str.." "..StringHash(trans_str)
+		local compressMsgString = LibDeflate:EncodeForWoWAddonChannel(LibDeflate:CompressDeflate(totalMsgString))
+		self:SendMessage(compressMsgString, distribution)
+		self:DebugMessage("tell our transports ; length: "..strlen(compressMsgString))
 	else
 		self:DebugMessage("nothing to tell")
 	end
@@ -225,7 +176,7 @@ function NauticusClassic:OnCommReceived(prefix, msg, distribution, sender)
 		self:DebugMessage("received sender: "..sender.." ; dist: "..distribution.." ; length: "..strlen(msg))
 		if 254 <= strlen(msg) then return; end -- message too big, probably corrupted
 
-		local args = GetArgs(msg, " ")
+		local args = GetArgs(LibDeflate:DecodeForWoWAddonChannel(LibDeflate:DecompressDeflate(msg)), " ")
 
 		if args[1] == CMD_VERSION then -- version, num
 			self:ReceiveMessage_version(tonumber(args[2]), distribution, sender)
@@ -266,15 +217,13 @@ function NauticusClassic:ReceiveMessage_known(version, transports, hash, distrib
 	local lag = GetLag()
 	local set, respond, since, boots, swaps
 
-	--[===[@debug@
-	if hash and self.debug then
+	if hash then
 		local rehash = StringHash(transports)
-		hash = uncrunch(hash)
 		if hash ~= rehash then
 			self:DebugMessage("wrong hash: "..hash.." (supplied) vs "..rehash.." (computed)")
+			return
 		end
 	end
-	--@end-debug@]===]
 
 	for transit, values in pairs(self:StringToKnown(transports)) do
 		since, boots, swaps = values.since, values.boots, values.swaps
@@ -386,17 +335,17 @@ function NauticusClassic:StringToKnown(transports)
 
 	for t = 1, #(args), 1 do
 		args_tmp = GetArgs(args[t], ":")
-		transit = uncrunch(args_tmp[1])
+		transit = args_tmp[1]
 
 		if transit and self.transports[transit] then
 			since = args_tmp[2]
 			if since then
-				since, swaps, boots = uncrunch(since), args_tmp[3], args_tmp[4]
+				since, swaps, boots = since, args_tmp[3], args_tmp[4]
 				if since then
 					trans_tab[transit] = {
 						['since'] = since,
-						['boots'] = boots and uncrunch(boots) or 0,
-						['swaps'] = swaps and uncrunch(swaps) or 1,
+						['boots'] = boots or 0,
+						['swaps'] = swaps or 1,
 					}
 				end
 			else
