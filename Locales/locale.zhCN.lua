@@ -71,6 +71,8 @@ L["The Bravery"] = "勇者号"
 L["The Lady Mehley"] = "梅蕾女士号"
 L["The Moonspray"] = "月海之浪号"
 L["Feathermoon Ferry"] = "羽月渡船"
+L["Deeprun Tram North"] = true
+L["Deeprun Tram South"] = true
 
 -- zones (*must* strictly match the in-game name)
 L["Orgrimmar"] = "奥格瑞玛"
@@ -84,6 +86,9 @@ L["Darkshore"] = "黑海岸"
 L["Dustwallow Marsh"] = "尘泥沼泽"
 L["Teldrassil"] = "泰达希尔"
 L["Feralas"] = "菲拉斯"
+L["Stormwind City"] = true
+L["Ironforge"] = true
+L["Deeprun Tram"] = true
 
 -- subzones
 L["Grom'gol"] = "格罗姆高营地"
@@ -109,3 +114,5 @@ L["Th"]  = "塞拉摩"  -- Theramore
 L["RTV"] = "鲁瑟兰"  -- Rut'Theran Village
 L["FMS"] = "羽月" -- Feathermoon
 L["Fer"] = "遗忘海岸" -- Feralas
+L["SW"] = true -- Stormwind City
+L["IF"] = true -- Ironforge

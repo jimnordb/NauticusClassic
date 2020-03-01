@@ -70,6 +70,8 @@ L["The Bravery"] = true
 L["The Lady Mehley"] = true
 L["The Moonspray"] = true
 L["Feathermoon Ferry"] = true
+L["Deeprun Tram North"] = true
+L["Deeprun Tram South"] = true
 
 -- zones (*must* strictly match the in-game name)
 L["Orgrimmar"] = true
@@ -83,6 +85,9 @@ L["Darkshore"] = true
 L["Dustwallow Marsh"] = true
 L["Teldrassil"] = true
 L["Feralas"] = true
+L["Stormwind City"] = true
+L["Ironforge"] = true
+L["Deeprun Tram"] = true
 
 -- subzones
 L["Grom'gol"] = true
@@ -108,3 +113,5 @@ L["Th"]  = true -- Theramore
 L["RTV"] = true -- Rut'Theran Village
 L["FMS"] = true -- Feathermoon
 L["Fer"] = true -- Feralas
+L["SW"] = true -- Stormwind City
+L["IF"] = true -- Ironforge

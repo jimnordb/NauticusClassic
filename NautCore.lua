@@ -25,7 +25,7 @@ local ldbicon = LibStub("LibDBIcon-1.0")
 
 -- object variables
 NauticusClassic.DEFAULT_PREFIX = "NauticSync" -- do not change!
-NauticusClassic.versionNum = 106 -- for comparison
+NauticusClassic.versionNum = 110 -- for comparison
 NauticusClassic.lowestNameTime = "--"
 NauticusClassic.tempText = ""
 NauticusClassic.tempTextCount = 0
@@ -296,6 +296,8 @@ function NauticusClassic:OnInitialize()
 	self:InitialiseConfig()
 end
 
+local onUpdateTimer = nil
+
 function NauticusClassic:OnEnable()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -303,7 +305,7 @@ function NauticusClassic:OnEnable()
 
 	NauticusClassic.iconRenderTimer = self:ScheduleRepeatingTimer("DrawMapIcons", 1 / iconFramerate)
 	self:ScheduleRepeatingTimer("Clock_OnUpdate", 1) -- every second (clock tick)
-	self:ScheduleRepeatingTimer("CheckTriggers_OnUpdate", 0.8) -- every 4/5th of a second
+	onUpdateTimer = self:ScheduleRepeatingTimer("CheckTriggers_OnUpdate", 0.8) -- every 4/5th of a second
 	--self:ScheduleRepeatingTimer("UpdateChannel", 60)
 
 	-- local frameEvent = CreateFrame('Frame')
@@ -326,11 +328,20 @@ local prevdy = 0
 local lastNonZeroDxDyTime = 0
 
 function NauticusClassic:OnUpdate()
-	local x, y = HBD:GetPlayerWorldPosition()
+	local x, y, instanceID = HBD:GetPlayerWorldPosition()
+
 	local ddx = abs(x - prevx)
 	local ddy = abs(y - prevy)
-	if prevdx == 0 and prevdy == 0 and (ddx > 0 or ddy > 0) and GetTime() - lastNonZeroDxDyTime > 10 then
+	if prevx ~= 0 and prevy ~= 0 and prevdx == 0 and prevdy == 0 and (ddx > 0 or ddy > 0) and GetTime() - lastNonZeroDxDyTime > 10 then
+		-- if onUpdateTimer then
+		-- 	NauticusClassic:CancelTimer(onUpdateTimer)
+		-- end
+		-- onUpdateTimer = NauticusClassic:ScheduleRepeatingTimer("CheckTriggers_OnUpdate", 1.0)
+		-- NauticusClassic:CheckTriggers_OnUpdate()
 		NauticusClassic:DebugMessage(format("MOVED: %.3f", GetTime()))
+	end
+	if prevx ~= 0 and prevy ~= 0 and (prevdx ~= 0 or prevdy ~= 0) and ddx == 0 and ddy == 0 then
+		NauticusClassic:DebugMessage(format("STOPPED: %.3f", GetTime()))
 	end
 	if ddx > 0 or ddy > 0 then
 		lastNonZeroDxDyTime = GetTime()
@@ -392,16 +403,22 @@ function NauticusClassic:DrawMapIcons(worldOnly)
 							zonings[id][index] == true
 					end
 
-					if x < 0.5 then
-						xw, yw = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 1)
-						wzone = 1
+					if self.coordsType[id] < 0 then
+						if x < 0.5 then
+							xw, yw = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 1)
+							wzone = 1
+						else
+							xw, yw = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 0)
+							wzone = 0
+						end
+						xm, ym = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, instanceID)
 					else
-						xw, yw = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, 0)
-						wzone = 0
+						xw, yw = x, y
+						wzone = self.coordsType[id]
+						xm, ym = x, y
 					end
-					xm, ym = HBD:GetWorldCoordinatesFromAzerothWorldMap(x, y, instanceID)
 
-					if xw and yw and xm and ym then
+					if xw and yw then
 						if WorldMapVisible and showWorldIcons and isFactionInteresting then
 							if isZoning ~= transport.status then
 								buttonWorld.texture:SetTexture(isZoning and ARTWORK_ZONING or transport.texture_name)
@@ -416,7 +433,7 @@ function NauticusClassic:DrawMapIcons(worldOnly)
 							buttonWorld:Hide()
 						end
 
-						if isZoneInteresting and showMiniIcons and isFactionInteresting then
+						if xm and ym and isZoneInteresting and showMiniIcons and isFactionInteresting then
 							if not worldOnly then
 								Pins:RemoveMinimapIcon(self, buttonMini)
 								Pins:AddMinimapIconWorld(self, buttonMini, instanceID, xm, ym, true)
@@ -508,7 +525,7 @@ function NauticusClassic:Clock_OnUpdate()
 	self:UpdateDisplay()
 end
 
-local x, y, ax, ay, dax, day, tx, ty, instanceID, dist, post, last_trig, keep_time
+local x, y, dx, dy, ax, ay, dax, day, tx, ty, txp, typ, instanceID, dist, post, last_trig, keep_time
 local old_x, old_y, old_ax, old_ay -- old player coords
 local prev_time = 0
 local prev_rot = 0
@@ -522,7 +539,27 @@ function NauticusClassic:CheckTriggers_OnUpdate()
 	old_ax, old_ay = ax, ay
 	x, y, instanceID = HBD:GetPlayerWorldPosition()
 	ax, ay = HBD:GetAzerothWorldMapCoordinatesFromWorld(x, y, instanceID)
-	if not x or not old_x or not ax or not old_ax then return; end
+
+	if not x or not old_x or not y or not old_y then return; end
+
+	dx = x - old_x
+	dy = y - old_y
+
+	-- start calculate data
+	-- local now = GetTime()
+	-- dt = now - prev_time
+	-- prev_time = now
+	-- local rot = GetPlayerFacing()
+	-- local drot = deg(rot - prev_rot)
+	-- if drot < -180 then
+	-- 	drot = 360 + drot
+	-- end
+	-- if drot > 180 then
+	-- 	drot = drot - 360
+	-- end
+	-- self:DebugMessage(format("%.14f:%.14f:%.14f:%.14f:%.3f:0:%.4f:%.4f", x, y, dx, dy, dt, drot, deg(rot)))
+	-- prev_rot = rot
+	-- end calculate data
 
 	-- start calculate data
 	-- dax = ax - old_ax
@@ -542,7 +579,6 @@ function NauticusClassic:CheckTriggers_OnUpdate()
 	-- prev_rot = rot
 	-- end calculate data
 
-
 	dist = HBD:GetWorldDistance(instanceID, x, y, old_x, old_y)
 	-- have we moved by at least 6.16 game yards since the last check? this equates to >~110% movement speed
 	if 6.16 < dist then
@@ -554,24 +590,33 @@ function NauticusClassic:CheckTriggers_OnUpdate()
 				-- within 20 game yards of trigger coords?
 				--if 20.0 > Astrolabe:ComputeDistance(0, 0, x, y,
 				--	0, 0, transitData[transit].x[index], transitData[transit].y[index]) then
-				tx, ty = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData[transit].x[index], transitData[transit].y[index], instanceID)
+				if self.coordsType[transit] < 0 then
+					txp, typ = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData[transit].x[index-1], transitData[transit].y[index-1], instanceID)
+					tx, ty = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData[transit].x[index], transitData[transit].y[index], instanceID)
+				else
+					txp, typ = transitData[transit].x[index-1], transitData[transit].y[index-1]
+					tx, ty = transitData[transit].x[index], transitData[transit].y[index]
+				end
 				local tdist = HBD:GetWorldDistance(instanceID, x, y, tx, ty)
 				if tdist and 20.0 > tdist then
-					if post then
-						if last_trig and keep_time then
-							self:SetKnownCycle(transit, GetTime() - last_trig + keep_time, 0, 0)
-							self:RequestTransport(transit, "ALL")
-							self:DoRequest(10 + math.random() * 10, "ALL")
-							keep_time = nil
-							last_trig = GetTime()
+					if (not (self.checkTriggerDirection[transit] and self.checkTriggerDirection[transit].x and not self:sameSign(dx, tx - txp))) and
+						(not (self.checkTriggerDirection[transit] and self.checkTriggerDirection[transit].y and not self:sameSign(dy, ty - typ))) then
+						if post then
+							if last_trig and keep_time then
+								self:SetKnownCycle(transit, GetTime() - last_trig + keep_time, 0, 0)
+								self:RequestTransport(transit, "ALL")
+								self:DoRequest(10 + math.random() * 10, "ALL")
+								keep_time = nil
+								last_trig = GetTime()
+							end
+						else
+							if not last_trig then
+								self:SetKnownTime(instanceID, transit, index, x, y, 17.0 < dist)
+								last_trig = GetTime()
+							end
 						end
-					else
-						if not last_trig then
-							self:SetKnownTime(instanceID, transit, index, x, y, 17.0 < dist)
-							last_trig = GetTime()
-						end
+						return
 					end
-					return
 				end
 			end
 		end
@@ -583,7 +628,11 @@ function NauticusClassic:CheckTriggers_OnUpdate()
 					-- within 25 game yards of platform coords?
 					--if 25.0 > Astrolabe:ComputeDistance(0, 0, x, y,
 					--	0, 0, transitData[transit].x[data.index], transitData[transit].y[data.index]) then
-					tx, ty = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData[transit].x[data.index], transitData[transit].y[data.index], instanceID)
+					if self.coordsType[transit] < 0 then
+						tx, ty = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData[transit].x[data.index], transitData[transit].y[data.index], instanceID)
+					else
+						tx, ty = transitData[transit].x[data.index], transitData[transit].y[data.index]
+					end
 					local tdist = HBD:GetWorldDistance(instanceID, x, y, tx, ty)
 					if tdist and 20.0 > tdist then
 						self:DebugMessage("near: "..transit)
@@ -598,8 +647,14 @@ end
 
 function NauticusClassic:SetKnownTime(instanceID, transit, index, x, y, set)
 	local transitData = transitData[transit]
-	local ix, iy = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData.x[index-1], transitData.y[index-1], instanceID)
-	local ix2, iy2 = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData.x[index], transitData.y[index], instanceID)
+	local ix, iy, ix2, iy2
+	if self.coordsType[transit] < 0 then
+		ix, iy = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData.x[index-1], transitData.y[index-1], instanceID)
+		ix2, iy2 = HBD:GetWorldCoordinatesFromAzerothWorldMap(transitData.x[index], transitData.y[index], instanceID)
+	else
+		ix, iy = transitData.x[index-1], transitData.y[index-1]
+		ix2, iy2 = transitData.x[index], transitData.y[index]
+	end
 	--local extrapolate = -transitData.dt[index] + transitData.dt[index] *
 	--	(Astrolabe:ComputeDistance(0, 0, x, y, 0, 0, ix, iy) /
 	--	Astrolabe:ComputeDistance(0, 0, transitData.x[index], transitData.y[index], 0, 0, ix, iy) )
@@ -650,7 +705,7 @@ function NauticusClassic:InitialiseConfig()
 	do
 		local version
 		--@non-debug@
-		version = "1.0.6"
+		version = "1.1.0"
 		--@end-non-debug@
 		local title = "NauticusClassic"
 		if version then
@@ -983,4 +1038,8 @@ function NauticusClassic:DebugMessage(msg)
 		--ChatFrame3:AddMessage(format("[Naut] ["..YELLOW.."%0.3f|r]: %s", now-lastDebug, msg))
 		lastDebug = now
 	end
+end
+
+function NauticusClassic:sameSign(num1, num2)
+    return num1 >= 0 and num2 >= 0 or num1 < 0 and num2 < 0
 end

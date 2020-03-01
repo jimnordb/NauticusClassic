@@ -14,6 +14,7 @@ Important: This addon works best the more players on your realm also using the a
    * Displays the most relevant transports on the Mini-Map, based on your current zone
    * Map icons rotate to show their actual direction at any point in time
    * Shows arrival or departure schedule for each platform when you mouse-over any map icon
+ * Shows Deeprun Tram Mini-Map icons with arrival/departure times when inside instance
  * Discovers schedule by travelling a route in either direction
    * Calculates future schedules, based on precisely measured round-trip cycles
  * Automatically share schedules with other users of the addon on your realm
@@ -56,12 +57,6 @@ Rarely, schedules can become corrupted due to changes in your computer's system 
 
 ### Q. Doesn't weekly maintenance ruin the schedules?
 It doesn't! We can only assume how Blizzard calculates transport schedules and their positions but it's probably based on the realm server's system clock, which is likely synchronised with a centralised ntp time server at each data centre. You can verify this by visiting another realm (at least, in the same geographical location - e.g. EU, US Eastern) to observe exactly the same schedules. This is another way to obtain accurate schedule data - from other realms. If there is one, an epoch is presently unknown - if any maths wiz can manage to reverse engineer it (simultaneous equations?), do let me know!
-
-### Q. Where did the GUI disappear to?
-The red window was removed in favour of map icons with tooltips. It became difficulty to maintain the rather clunky code necessary to provide this functionality and consumed more resources than desirable. Plus it didn't cater for other languages very well due to its fixed size. Native FuBar support was removed in favour of LibDataBroker (Broker/LDB) displays. Broker allows you to choose your method of displaying plugins. The lightweight bridge addon Broker2FuBar returns the old FuBar functionality, as well as allowing you to put it as a Mini-Map button (even if you don't use FuBar).
-
-### Q. Can you add the Deeprun Tram?
-Unfortunately no, since it's treated as an instance and we can't properly track player coords within instances.
 
 ---
 Nauticus Classic is a rewrite of Nauticus by Drooliog which was a complete rewrite of ZeppelinMaster which was originally conceived by Sammysnake. He runs a DKP hosting service @ dkphosting.net.
