@@ -469,7 +469,7 @@ function NauticusClassic:Clock_OnUpdate()
 
 		if 0 > alarmCountdown then
 			alarmSet, alarmDinged = false, false
-			PlaySound("AuctionWindowClose")
+			PlaySound(SOUNDKIT.AUCTION_WINDOW_CLOSE)
 		end
 	end
 
@@ -913,7 +913,7 @@ function NauticusClassic:ToggleAlarm()
 	if not alarmSet then alarmDinged = false end
 	DEFAULT_CHAT_FRAME:AddMessage(YELLOW.."NauticusClassic|r - "..WHITE..
 		L["Alarm is now: "]..(alarmSet and RED..L["ON"] or GREEN..L["OFF"]).."|r")
-	PlaySound("AuctionWindowOpen")
+	PlaySound(SOUNDKIT.AUCTION_WINDOW_OPEN)
 end
 
 function NauticusClassic:IsAlarmSet()
